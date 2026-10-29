@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guidewise | How We Build an Intelligent Business</title>
+<style>
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#14202E; --muted:#56657A; --rule:#D8DEE6;
+  --navy:#1F3A5F; --navy-deep:#16304F; --navy-tint:#E9EEF5; --amber:#F2A33C; --gold:#C9A24B;
+  --accent-ink:#8F5300; --good:#2F6B4F; --warn:#9A3B2E; --warn-tint:#F7ECEA; --good-tint:#E8F1EC;
+  --on-navy:#F3F6FA; --on-navy-muted:#B9C7D8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C141F; --surface:#131E2C; --ink:#E7ECF2; --muted:#9BA9B9; --rule:#24344A;
+    --navy:#1F3A5F; --navy-deep:#122540; --navy-tint:#18273A; --accent-ink:#F2B45E;
+    --good:#7CC4A0; --warn:#E59A8C; --warn-tint:#2A1C1C; --good-tint:#16271F;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C141F; --surface:#131E2C; --ink:#E7ECF2; --muted:#9BA9B9; --rule:#24344A;
+  --navy:#1F3A5F; --navy-deep:#122540; --navy-tint:#18273A; --accent-ink:#F2B45E;
+  --good:#7CC4A0; --warn:#E59A8C; --warn-tint:#2A1C1C; --good-tint:#16271F;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",Times,serif;font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.measure{max-width:68ch}
+h1,h2,h3,h4{font-weight:400;line-height:1.2;margin:0}
+p{margin:0 0 1em}
+em{font-style:italic}
+strong{font-weight:700}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--navy);color:var(--on-navy);padding:56px 0 64px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--amber),var(--gold))}
+.brand{display:flex;align-items:baseline;gap:14px;margin-bottom:48px;color:var(--on-navy-muted);font-size:15px}
+.brand b{font-size:22px;letter-spacing:.06em;color:var(--on-navy);font-weight:400}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(34px,4.6vw,56px);letter-spacing:-.01em;margin-bottom:24px}
+.hero .lede{font-size:20px;color:var(--on-navy-muted);max-width:56ch}
+.equation{margin-top:40px;border-top:1px solid rgba(255,255,255,.18);padding-top:24px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;font-size:17px}
+.equation .term{color:var(--on-navy)}
+.equation .op{color:var(--amber);font-size:22px}
+.equation .result{color:var(--amber);font-style:italic}
+.hero-figure figcaption{font-size:14px;color:var(--on-navy-muted);margin-top:8px;font-style:italic}
+.curve-label{font-family:Georgia,serif;font-size:15px;fill:#DCE5EF}
+.curve-small{font-family:Georgia,serif;font-size:13px;fill:#9FB2C8;font-style:italic}
+
+/* ---------- Sticky depth bar ---------- */
+.depthbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);padding-top:env(safe-area-inset-top,0px)}
+.depthbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.depthbar .hint{font-size:15px;color:var(--muted);font-style:italic}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;padding:3px;background:var(--bg)}
+.seg button{font:inherit;font-size:15px;border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.seg button:hover:not([aria-pressed="true"]){color:var(--ink)}
+.seg.small button{font-size:13px;padding:4px 10px}
+.seg .t-short{display:none}
+.seg .n{display:inline-block;margin-right:6px;color:var(--gold)}
+.seg button[aria-pressed="true"] .n{color:var(--amber)}
+
+/* ---------- Question index ---------- */
+.index{padding:56px 0 24px}
+.index h2{font-size:30px;margin-bottom:8px}
+.index p.sub{color:var(--muted);margin-bottom:28px}
+.qlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));border-top:1px solid var(--rule)}
+.qlist li{border-bottom:1px solid var(--rule)}
+.qlist a{display:flex;gap:14px;padding:16px 4px;text-decoration:none;font-size:19px}
+.qlist a:hover .q{text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:4px}
+.qlist .glyph{color:var(--gold);flex:0 0 auto;width:20px}
+
+/* ---------- Question sections ---------- */
+.qsec{padding:64px 0;border-top:1px solid var(--rule)}
+.qsec:nth-of-type(even){background:var(--surface)}
+.qhead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.qhead .ask{font-size:15px;color:var(--accent-ink);font-style:italic;margin-bottom:6px}
+.qhead h2{font-size:clamp(28px,3.4vw,40px);max-width:24ch}
+.short{font-size:22px;line-height:1.55;max-width:60ch}
+.lvl{animation:reveal .35s ease}
+@keyframes reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[data-depth="1"] .l2,[data-depth="1"] .l3,[data-depth="2"] .l3{display:none}
+.lvl-tag{display:flex;align-items:center;gap:12px;margin:40px 0 18px;color:var(--muted);font-size:14px;font-style:italic}
+.lvl-tag::after{content:"";flex:1;height:1px;background:var(--rule)}
+.lvl-tag .dot{width:22px;height:22px;border-radius:50%;border:1px solid var(--gold);display:inline-grid;place-items:center;font-style:normal;color:var(--accent-ink);font-size:12px}
+.more{font:inherit;font-size:15px;margin-top:20px;background:none;border:0;border-bottom:1px solid var(--amber);color:var(--ink);cursor:pointer;padding:2px 0}
+[data-depth="3"] > .wrap > .more,[data-depth="3"] .case-more{display:none}
+
+/* Enterprise view callout */
+.ev{display:grid;grid-template-columns:40px 1fr;gap:14px;margin-top:24px;padding:18px 20px;background:var(--navy-tint);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;max-width:72ch}
+.ev svg{width:36px;height:36px}
+.ev .lbl{font-size:14px;color:var(--accent-ink);font-style:italic;display:block;margin-bottom:2px}
+.ev p{margin:0;font-size:17px}
+
+/* Grids & tables */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:24px}
+.qsec:nth-of-type(even) .panel{background:var(--bg)}
+.panel h3{font-size:22px;margin-bottom:10px}
+.panel .tag{font-size:14px;color:var(--muted);font-style:italic;margin-bottom:12px}
+ul.clean{padding-left:1.1em;margin:0}
+ul.clean li{margin-bottom:.45em}
+ul.clean li::marker{color:var(--gold)}
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:16px;min-width:620px}
+th,td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--rule)}
+th{font-weight:400;font-style:italic;color:var(--muted);background:var(--navy-tint)}
+tr:last-child td{border-bottom:0}
+.status{display:inline-block;font-size:13px;padding:2px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;font-style:normal}
+.s-done{color:var(--good)} .s-uat{color:var(--accent-ink)} .s-build{color:var(--navy)} .s-design{color:var(--muted)}
+:root[data-theme="dark"] .s-build{color:#9EC0E6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .s-build{color:#9EC0E6}}
+
+.caplist{columns:3 240px;column-gap:32px;font-size:16px}
+.caplist h4{font-size:17px;font-style:italic;color:var(--accent-ink);margin:0 0 8px;break-after:avoid}
+.caplist ul{margin:0 0 20px;padding-left:1.1em}
+.caplist li{margin-bottom:4px;break-inside:avoid}
+
+/* Difference rows */
+.diff{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule)}
+.diff > div{padding:20px 24px 20px 0;border-bottom:1px solid var(--rule)}
+.diff > div:nth-child(even){padding-left:24px;border-left:1px solid var(--rule)}
+.diff h3{font-size:21px;margin-bottom:6px}
+.diff .why{font-size:16px;color:var(--muted)}
+.diff .why b{color:var(--ink);font-weight:400;font-style:italic}
+
+/* Method */
+.method{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:step;position:relative}
+.method li{position:relative;padding:0 18px 0 0}
+.method .node{display:flex;align-items:center;gap:0;margin-bottom:16px}
+.method .num{width:52px;height:52px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:22px;flex:0 0 auto;box-shadow:0 0 0 5px var(--bg)}
+.qsec:nth-of-type(even) .method .num{box-shadow:0 0 0 5px var(--surface)}
+.method .line{height:2px;background:var(--gold);flex:1;margin-left:8px}
+.method li:last-child .line{background:repeating-linear-gradient(90deg,var(--gold) 0 6px,transparent 6px 12px)}
+.method h3{font-size:21px;margin-bottom:6px}
+.method p{font-size:16px;color:var(--muted);margin:0}
+.band{margin-top:28px;padding:14px 20px;border:1px solid var(--gold);border-radius:999px;text-align:center;font-size:16px;color:var(--ink);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold) 12%,transparent),transparent)}
+.loop{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:14px;color:var(--accent-ink);font-style:italic;font-size:16px}
+.loop svg{width:30px;height:30px;flex:0 0 auto}
+
+/* Code vs model */
+.router{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;margin-top:8px}
+.router .side{border-radius:8px;padding:22px;border:1px solid var(--rule);background:var(--surface)}
+.qsec:nth-of-type(even) .router .side{background:var(--bg)}
+.router .side.code{border-top:4px solid var(--navy)}
+.router .side.model{border-top:4px solid var(--amber)}
+.router h3{font-size:21px;margin-bottom:4px}
+.router .kicker{font-size:14px;font-style:italic;color:var(--muted);margin-bottom:12px}
+.router .mid{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:15px;color:var(--muted);max-width:150px}
+.router .mid svg{width:120px;height:90px}
+.traits{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.traits span{font-size:14px;padding:3px 10px;border-radius:999px;background:var(--navy-tint)}
+
+/* Gates */
+.gates{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.gates li{position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:16px 14px 14px;font-size:15px}
+.qsec:nth-of-type(even) .gates li{background:var(--bg)}
+.gates li .g{display:block;font-size:13px;color:var(--accent-ink);font-style:italic;margin-bottom:6px}
+.gates li b{display:block;font-weight:400;font-size:17px;margin-bottom:4px}
+.gates li span.d{color:var(--muted);font-size:14px;line-height:1.45;display:block}
+.gates li::before{content:"";position:absolute;top:0;left:14px;right:14px;height:3px;background:var(--navy);border-radius:0 0 3px 3px}
+.gates li:last-child::before{background:var(--amber)}
+.horizon{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.horizon span{border:1px solid var(--rule);border-radius:6px;padding:6px 12px;font-size:15px;background:var(--surface)}
+.qsec:nth-of-type(even) .horizon span{background:var(--bg)}
+
+/* Pitfalls */
+.pit{border-top:1px solid var(--rule)}
+.pit-row{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--rule)}
+.pit-row > div{padding:18px 20px 18px 0}
+.pit-row > div + div{padding-left:20px}
+.pit-row h3{font-size:20px}
+.pit-row .without{background:var(--warn-tint);border-left:3px solid var(--warn)}
+.pit-row .with{background:var(--good-tint);border-left:3px solid var(--good)}
+.pit-row .without,.pit-row .with{font-size:16px}
+.pit-row .lab{display:block;font-size:13px;font-style:italic;margin-bottom:4px}
+.pit-row .without .lab{color:var(--warn)} .pit-row .with .lab{color:var(--good)}
+.pit-head{display:grid;grid-template-columns:1.1fr 1fr 1fr;font-size:14px;color:var(--muted);font-style:italic;padding:0 0 8px}
+.pit-head span + span{padding-left:20px}
+
+/* Cases */
+.cases{display:grid;gap:36px;margin-top:8px}
+.case{background:var(--surface);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.qsec:nth-of-type(even) .case{background:var(--bg)}
+.case-top{display:grid;grid-template-columns:1fr auto;gap:16px;padding:26px 28px 20px;border-bottom:1px solid var(--rule);align-items:start}
+.case-top .who{font-size:15px;color:var(--muted);font-style:italic}
+.case-top h3{font-size:28px;margin:4px 0 8px}
+.case-top .line{font-size:19px;color:var(--accent-ink);font-style:italic}
+.case-body{padding:8px 28px 28px}
+.crr{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:16px;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.crr > div{padding:18px 20px}
+.crr > div + div{border-left:1px solid var(--rule)}
+.crr .k{display:block;font-size:14px;font-style:italic;color:var(--muted);margin-bottom:6px}
+.crr p{font-size:16px;margin:0}
+.crr .res{background:color-mix(in srgb,var(--amber) 9%,transparent)}
+.svc{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--navy);color:#fff;white-space:nowrap}
+.svc.grc{background:var(--gold);color:#1A1405}
+.case-more{font:inherit;font-size:15px;background:none;border:0;border-bottom:1px solid var(--amber);color:var(--ink);cursor:pointer;padding:2px 0;margin-top:18px}
+.case h4{font-size:19px;margin:22px 0 10px}
+.case p,.case li{font-size:16px}
+
+/* Before/after bars */
+.ba{margin:14px 0 6px}
+.ba-row{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin-bottom:10px;font-size:15px}
+.ba-row .lab{color:var(--muted);font-style:italic;text-align:right}
+.bar{height:30px;border-radius:4px;display:flex;align-items:center;padding:0 10px;font-size:14px;white-space:nowrap}
+.bar.before{background:repeating-linear-gradient(135deg,var(--rule) 0 6px,transparent 6px 12px);border:1px solid var(--rule);color:var(--ink)}
+.bar.after{background:var(--amber);color:#1A1405;width:12px;padding:0;overflow:visible}
+.bar.after span{margin-left:22px;color:var(--ink)}
+.blocks{display:flex;flex-wrap:wrap;gap:5px}
+.blocks i{width:26px;height:30px;border-radius:3px;border:1px solid var(--rule);background:repeating-linear-gradient(135deg,var(--rule) 0 4px,transparent 4px 8px)}
+.blocks i.one{background:var(--amber);border-color:var(--amber);width:56px}
+.timeline{position:relative;height:64px;margin:18px 0 6px}
+.timeline .track{position:absolute;top:22px;left:0;right:0;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--navy),var(--amber))}
+.timeline .m{position:absolute;top:12px;transform:translateX(-50%);text-align:center;font-size:13px;color:var(--muted)}
+.timeline .m::before{content:"";display:block;width:14px;height:14px;margin:3px auto 14px;border-radius:50%;background:var(--surface);border:3px solid var(--navy)}
+.timeline .m.end::before{border-color:var(--amber)}
+.timeline .m:first-child{transform:none;text-align:left}
+.timeline .m:first-child::before{margin-left:0}
+.timeline .m.end{transform:translateX(-100%);text-align:right}
+.timeline .m.end::before{margin-right:0}
+.stat-row{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+.stat{border:1px solid var(--rule);border-radius:8px;padding:12px 16px;min-width:150px;flex:1}
+.stat b{display:block;font-size:26px;font-weight:400;color:var(--navy)}
+:root[data-theme="dark"] .stat b{color:#9EC0E6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stat b{color:#9EC0E6}}
+.stat span{font-size:14px;color:var(--muted)}
+.quote{border-left:3px solid var(--amber);padding:4px 0 4px 18px;font-style:italic;font-size:18px;margin:18px 0}
+
+/* Intelligent business stack */
+.stack{display:flex;flex-direction:column-reverse;align-items:center;gap:6px;margin:12px 0 4px}
+.stack div{text-align:center;padding:11px 16px;border-radius:5px;font-size:16px;color:#fff}
+.stack .s1{width:100%;background:#16304F}
+.stack .s2{width:90%;background:#1F3A5F}
+.stack .s3{width:80%;background:#2C4D74}
+.stack .s4{width:70%;background:#3A6089}
+.stack .s5{width:60%;background:#8C7A3C}
+.stack .s6{width:50%;background:var(--amber);color:#1A1405}
+.stack-cap{text-align:center;font-size:14px;color:var(--muted);font-style:italic}
+
+/* Intelligent Business definition */
+.defn{font-size:clamp(24px,2.8vw,32px);line-height:1.35;max-width:30ch;margin-bottom:18px}
+.defn em{color:var(--accent-ink)}
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:28px}
+.contrast > div{padding:20px 22px}
+.contrast > div + div{border-left:3px solid var(--amber);background:color-mix(in srgb,var(--amber) 8%,transparent)}
+.contrast h3{font-size:20px;margin-bottom:10px}
+.contrast .k{font-size:14px;font-style:italic;color:var(--muted);display:block;margin-bottom:4px}
+.contrast ul{margin:0;padding-left:1.1em;font-size:16px}
+.contrast li{margin-bottom:6px}
+.contrast li::marker{color:var(--gold)}
+.traits6{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.traits6 li{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:20px;position:relative}
+.qsec:nth-of-type(even) .traits6 li{background:var(--bg)}
+.traits6 .tn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--amber);display:grid;place-items:center;color:var(--accent-ink);font-size:16px;margin-bottom:12px}
+.traits6 h3{font-size:20px;margin-bottom:6px}
+.traits6 p{font-size:15px;margin:0 0 10px;color:var(--muted)}
+.traits6 .proof{font-size:14px;margin:0;padding-top:10px;border-top:1px solid var(--rule);color:var(--ink)}
+.traits6 .proof i{color:var(--accent-ink)}
+.factors{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:10px;margin:20px 0 8px;text-align:center}
+.factors .f{border:1px solid var(--rule);border-radius:8px;padding:16px 12px;background:var(--surface);font-size:16px}
+.qsec:nth-of-type(even) .factors .f{background:var(--bg)}
+.factors .f b{display:block;font-weight:400;font-size:18px;margin-bottom:4px}
+.factors .f span{font-size:14px;color:var(--muted)}
+.qsec .factors .f.res,.qsec:nth-of-type(even) .factors .f.res{background:var(--navy);color:#fff;border-color:var(--navy)}
+.factors .f.res span{color:#C9D5E3}
+.factors .op{color:var(--amber);font-size:26px}
+
+/* Scorecard */
+.sc{display:grid;grid-template-columns:1.25fr .9fr;gap:36px;align-items:start;margin-top:12px}
+.sc-trait{border:1px solid var(--rule);border-radius:10px;background:var(--surface);margin-bottom:18px;overflow:hidden}
+.qsec:nth-of-type(even) .sc-trait{background:var(--bg)}
+.sc-trait header{display:flex;gap:14px;align-items:baseline;padding:18px 20px 6px}
+.sc-trait header .tn{color:var(--accent-ink);font-size:15px;flex:0 0 auto}
+.sc-trait h3{font-size:20px}
+.sc-trait .q{font-size:15px;color:var(--muted);padding:0 20px 10px;margin:0;font-style:italic}
+.sc-opts{display:grid;gap:0;border-top:1px solid var(--rule)}
+.sc-opts label{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;padding:10px 20px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--rule);line-height:1.45}
+.sc-opts label:last-child{border-bottom:0}
+.sc-opts input{position:absolute;opacity:0;pointer-events:none}
+.sc-opts .lv{width:26px;height:26px;border-radius:50%;border:1px solid var(--rule);display:grid;place-items:center;font-size:13px;color:var(--muted)}
+.sc-opts label:hover{background:var(--navy-tint)}
+.sc-opts input:checked + .lv{background:var(--amber);border-color:var(--amber);color:#1A1405}
+.sc-opts input:checked ~ .txt{color:var(--ink)}
+.sc-opts input:focus-visible + .lv{outline:3px solid var(--amber);outline-offset:2px}
+.sc-opts .txt{color:var(--muted)}
+.sc-measure{font-size:14px;padding:10px 20px 14px;color:var(--muted);background:var(--navy-tint);margin:0}
+.sc-measure i{color:var(--accent-ink)}
+.sc-panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);background:var(--navy);color:var(--on-navy);border-radius:12px;padding:24px}
+.sc-panel .lbl{font-size:14px;font-style:italic;color:var(--on-navy-muted)}
+.sc-total{display:flex;align-items:baseline;gap:10px;margin:4px 0 2px}
+.sc-total b{font-size:48px;font-weight:400;color:var(--amber);line-height:1}
+.sc-total span{color:var(--on-navy-muted)}
+.sc-band{font-size:22px;margin:6px 0 4px}
+.sc-band-d{font-size:15px;color:var(--on-navy-muted);margin:0 0 14px}
+.radar{width:100%;max-width:400px;display:block;margin:6px auto 4px}
+.radar text{font-family:Georgia,serif;font-size:12px;fill:#C9D5E3}
+.legend{display:flex;gap:16px;justify-content:center;font-size:13px;color:var(--on-navy-muted);margin-bottom:12px}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+.sc-start{border-top:1px solid rgba(255,255,255,.18);padding-top:14px;margin-top:4px}
+.sc-start h4{font-weight:400;font-size:17px;color:var(--amber);margin-bottom:6px}
+.sc-start p{font-size:15px;color:var(--on-navy);margin:0 0 8px}
+.sc-start .gov{color:var(--on-navy-muted);font-style:italic}
+.sc-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.sc-btns button{font:inherit;font-size:14px;border-radius:999px;padding:7px 14px;cursor:pointer;border:1px solid rgba(255,255,255,.35);background:transparent;color:var(--on-navy)}
+.sc-btns button.primary{background:var(--amber);border-color:var(--amber);color:#1A1405}
+.sc-note{font-size:13px;color:var(--on-navy-muted);margin:12px 0 0;font-style:italic}
+.bands{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:12px}
+.bands > div{padding:14px 16px;font-size:15px}
+.bands > div + div{border-left:1px solid var(--rule)}
+.bands b{display:block;font-weight:400;font-size:17px;margin-bottom:2px}
+.bands span{display:block;color:var(--accent-ink);font-size:13px;font-style:italic;margin-bottom:6px}
+.bands p{margin:0;color:var(--muted);font-size:14px}
+
+/* Governed system diagram */
+.gsys{display:grid;gap:8px;max-width:900px}
+.gl{border-radius:8px;padding:14px 18px;font-size:16px;text-align:center}
+.gk{display:block;font-size:13px;font-style:italic;margin-bottom:2px}
+.gl.owners{border:1px solid var(--rule);background:var(--surface)}
+.qsec:nth-of-type(even) .gl.owners{background:var(--bg)}
+.gl.owners .gk{color:var(--accent-ink)}
+.gagents{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ga{display:flex;flex-direction:column;justify-content:center;border:1.5px solid var(--amber);border-radius:8px;padding:12px;text-align:center;font-size:15px;background:color-mix(in srgb,var(--amber) 10%,transparent)}
+.ga.unknown{border-style:dashed;border-color:var(--muted);background:transparent;color:var(--muted)}
+.ga small{display:block;font-size:12px;font-style:italic;margin-top:4px}
+.gl.orch{background:var(--navy);color:#fff}
+.gl.orch .gk,.gl.govl .gk{color:var(--amber)}
+.gl.govl{background:var(--navy-deep);color:#fff;border:1px solid var(--gold)}
+.gl.data{border:1px solid var(--rule);color:var(--muted)}
+.gl.data .gk{color:var(--muted)}
+@media (max-width:700px){.gagents{grid-template-columns:1fr 1fr}}
+/* CTA + footer */
+.cta{background:var(--navy);color:var(--on-navy);padding:72px 0}
+.cta h2{font-size:clamp(30px,3.6vw,44px);margin-bottom:16px;max-width:22ch}
+.cta p{color:var(--on-navy-muted);max-width:60ch;font-size:19px}
+.cta .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:36px;border-top:1px solid rgba(255,255,255,.18);padding-top:24px}
+.cta .steps b{display:block;font-weight:400;color:var(--amber);font-size:19px;margin-bottom:6px}
+.cta .steps span{color:var(--on-navy-muted);font-size:16px}
+.cta .contact{margin-top:36px;font-size:18px}
+.cta .contact a{color:var(--amber)}
+footer{padding:28px 0 40px;font-size:14px;color:var(--muted)}
+footer p{margin:0 0 6px}
+
+.theme-toggle{font:inherit;font-size:14px;background:none;border:1px solid rgba(255,255,255,.3);color:var(--on-navy-muted);border-radius:999px;padding:4px 12px;cursor:pointer;margin-left:auto}
+
+@media (max-width:900px){
+  .contrast,.sc,.bands{grid-template-columns:1fr}
+  .contrast > div + div{border-left:0;border-top:3px solid var(--amber)}
+  .bands > div + div{border-left:0;border-top:1px solid var(--rule)}
+  .traits6{grid-template-columns:1fr 1fr}
+  .factors{grid-template-columns:1fr}
+  .factors .op{line-height:1}
+  .sc-panel{position:static}
+  .hero-grid,.two,.three,.router,.diff,.crr,.cta .steps{grid-template-columns:1fr}
+  .diff > div:nth-child(even){padding-left:0;border-left:0}
+  .crr > div + div{border-left:0;border-top:1px solid var(--rule)}
+  .method{grid-template-columns:1fr 1fr;row-gap:28px}
+  .method li:nth-child(2) .line{background:repeating-linear-gradient(90deg,var(--gold) 0 6px,transparent 6px 12px)}
+  .gates{grid-template-columns:1fr 1fr 1fr}
+  .router .mid{max-width:none;flex-direction:row;gap:10px}
+  .router .mid svg{transform:rotate(90deg);width:70px;height:60px}
+  .pit-row,.pit-head{grid-template-columns:1fr}
+  .pit-head{display:none}
+  .pit-row > div + div{padding-left:16px;margin-bottom:10px}
+  .pit-row > div:first-child{padding-bottom:10px}
+  .case-top{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .traits6{grid-template-columns:1fr}
+  body{font-size:17px}
+  .wrap{padding:0 18px}
+  .method{grid-template-columns:1fr}
+  .method .line{display:none}
+  .gates{grid-template-columns:1fr 1fr}
+  .short{font-size:20px}
+  .depthbar .hint{display:none}
+  .seg button{padding:6px 10px;font-size:14px}
+  .seg .t-long{display:none}
+  .seg .t-short{display:inline}
+  .ba-row{grid-template-columns:1fr}
+  .ba-row .lab{text-align:left}
+  .case-body,.case-top{padding-left:20px;padding-right:20px}
+}
+@media print{
+  .depthbar,.more,.case-more,.theme-toggle,.qhead .seg{display:none!important}
+  .qsec{break-inside:auto;padding:32px 0}
+  .case{break-inside:avoid}
+  body{font-size:12pt}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><b>GUIDEWISE</b><span>Business-First AI Transformation</span>
+      <button class="theme-toggle" id="themeBtn" type="button" aria-label="Switch light or dark view">Light / Dark</button>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1>We make the whole business smarter, one governed step at a time.</h1>
+        <p class="lede">Guidewise helps mid-market companies put AI to work safely. We start with your objectives and your pain, correct the process underneath, then design governed, cost-aware AI agents that keep compounding into an Intelligent Business. Build with us, build alone, or bring the agents you already have. AI is the hinge into the new business reality: get AI and its governance right, and everything else you have built is worth more.</p>
+        <div class="equation" aria-label="The Intelligent Business equation">
+          <span class="term">A governed business</span><span class="op">×</span>
+          <span class="term">secured technology</span><span class="op">×</span>
+          <span class="term">a human-agentic workforce</span><span class="op">=</span>
+          <span class="result">an Intelligent Business</span>
+        </div>
+      </div>
+      <figure class="hero-figure" style="margin:0"><svg viewBox="0 0 560 320" role="img" aria-label="The Intelligence Curve: nine steps from workflow and data to the Leap-Frog Moment"><path d="M40,200 Q69,200 98,196 Q127,196 156,186 Q185,186 214,171 Q243,171 272,151 Q301,151 330,127 Q359,127 388,99 Q417,99 446,66 Q475,66 504,30" fill="none" stroke="#F2A33C" stroke-width="5" stroke-linecap="round"/><path d="M326,143.0487139210781 C312,197.0487139210781 232,230.9125799032311 218,186.9125799032311" fill="none" stroke="#9FB2C8" stroke-width="2" stroke-dasharray="6 6"/><text x="302" y="223" font-family="Georgia,serif" font-style="italic" font-size="12" fill="#9FB2C8">the loop that compounds</text><circle cx="40" cy="200" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="40" y="204" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">1</text><circle cx="98" cy="196" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="98" y="200" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">2</text><circle cx="156" cy="186" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="156" y="190" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">3</text><circle cx="214" cy="171" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="214" y="175" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">4</text><circle cx="272" cy="151" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="272" y="155" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">5</text><circle cx="330" cy="127" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="330" y="131" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">6</text><circle cx="388" cy="99" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="388" y="103" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">7</text><circle cx="446" cy="66" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="446" y="70" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">8</text><circle cx="504" cy="30" r="14" fill="#F2A33C" stroke="#F2A33C" stroke-width="2"/><text x="504" y="34" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#16304F">9</text><text x="40" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">1</tspan>  Workflow & data</text><text x="210" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">2</tspan>  First agents</text><text x="380" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">3</tspan>  Governed & secured</text><text x="40" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">4</tspan>  Connected agents</text><text x="210" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">5</tspan>  Silos fall</text><text x="380" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">6</tspan>  Intelligence compounds</text><text x="40" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">7</tspan>  Record productivity</text><text x="210" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">8</tspan>  Products that win</text><text x="380" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">9</tspan>  Leap-Frog Moment</text></svg><figcaption>The Intelligence Curve: nine steps from clean data to the Leap-Frog Moment. AI is the hinge.</figcaption></figure>
+    </div>
+  </div>
+</header>
+
+<!-- ============ DEPTH BAR ============ -->
+<nav class="depthbar" aria-label="Level of detail">
+  <div class="wrap">
+    <span class="hint">Choose how deep to go. Every answer has three levels.</span>
+    <div class="seg" role="group" aria-label="Detail level for the whole playbook" id="globalSeg">
+      <button type="button" data-set="1" aria-pressed="true"><span class="n">1</span><span class="t-long">Short answer</span><span class="t-short">Short</span></button>
+      <button type="button" data-set="2" aria-pressed="false"><span class="n">2</span><span class="t-long">How it works</span><span class="t-short">How</span></button>
+      <button type="button" data-set="3" aria-pressed="false"><span class="n">3</span><span class="t-long">The detail</span><span class="t-short">Detail</span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ QUESTION INDEX ============ -->
+<section class="index">
+  <div class="wrap">
+    <h2>Start with the question on your mind</h2>
+    <p class="sub measure">These are the questions business owners ask us most. Each one opens with a short answer. When a question matters to you, go deeper.</p>
+    <ul class="qlist">
+      <li><a href="#hinge"><span class="glyph">?</span><span class="q">Why is AI the hinge, and what is the Intelligence Curve?</span></a></li>
+      <li><a href="#forces"><span class="glyph">?</span><span class="q">What forces are changing what my business is worth?</span></a></li>
+      <li><a href="#endgame"><span class="glyph">?</span><span class="q">What’s my End Game, and how long does it take?</span></a></li>
+      <li><a href="#what"><span class="glyph">?</span><span class="q">What does Guidewise actually do?</span></a></li>
+      <li><a href="#different"><span class="glyph">?</span><span class="q">Why is Guidewise different, and why does it matter?</span></a></li>
+      <li><a href="#start"><span class="glyph">?</span><span class="q">How does an engagement start?</span></a></li>
+      <li><a href="#cost"><span class="glyph">?</span><span class="q">How do you keep AI running costs under control?</span></a></li>
+      <li><a href="#secure"><span class="glyph">?</span><span class="q">How do you handle security and compliance?</span></a></li>
+      <li><a href="#govern"><span class="glyph">?</span><span class="q">Can we build our own agents?</span></a></li>
+      <li><a href="#pitfalls"><span class="glyph">?</span><span class="q">What goes wrong when companies skip these steps?</span></a></li>
+      <li><a href="#work"><span class="glyph">?</span><span class="q">What have you done for companies like ours?</span></a></li>
+      <li><a href="#intelligent"><span class="glyph">?</span><span class="q">What is an Intelligent Business?</span></a></li>
+      <li><a href="#scorecard"><span class="glyph">?</span><span class="q">How intelligent is my business today?</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<main>
+
+<!-- ============ HINGE ============ -->
+<section class="qsec layered" id="hinge" data-depth="1">
+  <div class="wrap">
+    <div class="qhead"><div><div class="ask">The idea everything else rests on</div><h2>Why is AI the hinge, and what is the Intelligence Curve?</h2></div><div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+    <div class="lvl l1">
+      <p class="short">AI is the hinge into the new business reality. Get AI and its governance right, and everything else you have built is worth more. Get it wrong, or leave it undone, and everything is discounted with it.</p>
+      <div class="two" style="align-items:center"><div><p class="measure">The Five Forces describe the market. The Five Closes in <em>The Intelligent Business Equation</em> prepare the business. <strong>The Intelligence Curve is where they meet:</strong> nine steps, powered by the Intelligence Close, that decide which side of the Leap-Frog Moment a company lands on.</p><p class="measure" style="color:var(--muted)">No AI plan, no loan. No governed AI, no buyer.</p></div>
+      <div class="panel" style="background:var(--navy);border-color:var(--navy)"><svg viewBox="0 0 560 320" role="img" aria-label="The Intelligence Curve: nine steps from workflow and data to the Leap-Frog Moment"><path d="M40,200 Q69,200 98,196 Q127,196 156,186 Q185,186 214,171 Q243,171 272,151 Q301,151 330,127 Q359,127 388,99 Q417,99 446,66 Q475,66 504,30" fill="none" stroke="#F2A33C" stroke-width="5" stroke-linecap="round"/><path d="M326,143.0487139210781 C312,197.0487139210781 232,230.9125799032311 218,186.9125799032311" fill="none" stroke="#9FB2C8" stroke-width="2" stroke-dasharray="6 6"/><text x="302" y="223" font-family="Georgia,serif" font-style="italic" font-size="12" fill="#9FB2C8">the loop that compounds</text><circle cx="40" cy="200" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="40" y="204" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">1</text><circle cx="98" cy="196" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="98" y="200" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">2</text><circle cx="156" cy="186" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="156" y="190" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">3</text><circle cx="214" cy="171" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="214" y="175" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">4</text><circle cx="272" cy="151" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="272" y="155" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">5</text><circle cx="330" cy="127" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="330" y="131" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">6</text><circle cx="388" cy="99" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="388" y="103" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">7</text><circle cx="446" cy="66" r="11" fill="#16304F" stroke="#F2A33C" stroke-width="2"/><text x="446" y="70" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#F2A33C">8</text><circle cx="504" cy="30" r="14" fill="#F2A33C" stroke="#F2A33C" stroke-width="2"/><text x="504" y="34" text-anchor="middle" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="#16304F">9</text><text x="40" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">1</tspan>  Workflow & data</text><text x="210" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">2</tspan>  First agents</text><text x="380" y="255" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">3</tspan>  Governed & secured</text><text x="40" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">4</tspan>  Connected agents</text><text x="210" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">5</tspan>  Silos fall</text><text x="380" y="279" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">6</tspan>  Intelligence compounds</text><text x="40" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">7</tspan>  Record productivity</text><text x="210" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">8</tspan>  Products that win</text><text x="380" y="303" font-family="Georgia,serif" font-size="13" fill="#DCE5EF"><tspan font-family="Courier New,monospace" font-weight="700" fill="#F2A33C">9</tspan>  Leap-Frog Moment</text></svg></div></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Scattered AI makes people faster. Orchestrated, governed AI makes the business more valuable. The question is not whether to use AI; it is how far up the Intelligence Curve the business will be when the Leap-Frog Moment arrives.</p></div></aside>
+    </div>
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>The nine steps of the Intelligence Curve</div>
+      <div class="tablewrap"><table><thead><tr><th>Step</th><th>What happens</th><th>The sign you have reached it</th><th>Close or Force</th></tr></thead><tbody><tr><td><b>1. Workflow and data</b></td><td>Workflows are mapped and corrected; one set of numbers and governed definitions.</td><td>The month-end close runs the same way every month, and the words that move money mean one thing.</td><td><em>Closes 1 and 2</em></td></tr><tr><td><b>2. First agents</b></td><td>Agents take on single jobs, working from governed data, with people deciding.</td><td>Staff trust an agent’s output enough to act on it.</td><td><em>Close 3</em></td></tr><tr><td><b>3. Governed and secured</b></td><td>Before agents multiply, each one is registered, owned, permissioned, and monitored, with cybersecurity and GRC in place.</td><td>Every agent has an owner and approved access; security and compliance evidence is on demand.</td><td><em>Secured technology · Force 3</em></td></tr><tr><td><b>4. Connected agents</b></td><td>Governed agents share data and hand work to each other through one orchestration layer.</td><td>Agents talk to each other, not through people copying between tools.</td><td><em>Close 3 · Force 4</em></td></tr><tr><td><b>5. Silos fall</b></td><td>Knowledge moves out of heads and departments into the system; tribal knowledge becomes company knowledge.</td><td>Answers live in the system; handoffs stop losing context.</td><td><em>Closes 4 and 5</em></td></tr><tr><td><b>6. Intelligence compounds</b></td><td>The business learns as a whole; each insight improves the next decision and makes the agents smarter.</td><td>Results improve quarter over quarter without adding people.</td><td><em>Close 3</em></td></tr><tr><td><b>7. Productivity hitting all-time highs</b></td><td>Work that took weeks takes minutes; people spend their time on judgment, not rework.</td><td>Output per person reaches a new high, and keeps climbing.</td><td><em>Close 3</em></td></tr><tr><td><b>8. New products and services beat competition</b></td><td>Company-wide insight turns into speed and precision competitors cannot match.</td><td>You win business with offerings and quotes competitors cannot yet deliver.</td><td><em>Force 5</em></td></tr><tr><td><b>9. Leap-Frog Moment</b></td><td>The gap between companies on the curve and those off it becomes visible.</td><td>You pass competitors still working at lower levels of the Intelligence Curve, or they pass you.</td><td><em>Force 5</em></td></tr></tbody></table></div>
+      <div class="two" style="margin-top:20px"><div class="panel"><h3>Why governance comes before connection</h3><p style="margin:0">Agents multiply fast, often faster than the owner knows. Governing and securing them at step 3 is what makes it safe to connect them at step 4, and it is exactly what lenders, insurers, and buyers test.</p></div>
+      <div class="panel"><h3>Why the curve bends upward</h3><p style="margin:0">Steps 4 to 6 form a loop: connected agents break down silos, falling silos let intelligence compound, and compounding intelligence makes the agents smarter. That is why the gap between leaders and laggards widens rather than closes.</p></div></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Every step leaves the business with something permanent: clean data, governed access, connected agents, shared knowledge. That is how intelligence compounds instead of resetting with each project.</p></div></aside>
+    </div>
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: where our client work sits on the curve</div>
+      <div class="tablewrap"><table><thead><tr><th>Step</th><th>What we have done</th></tr></thead><tbody><tr><td><b>1 · Workflow and data</b></td><td>At a manufacturer, a work-in-progress report that took about two weeks by hand now runs in minutes and reconciles to the penny, on a governed data foundation.</td></tr><tr><td><b>2 · First agents</b></td><td>A project management agent, formally accepted by the CEO, coaches engineer project managers from live job data.</td></tr><tr><td><b>3 · Governed and secured</b></td><td>Data access dual-signed before any system was touched; read-only endpoints; agents we did not build governed through IBM watsonx.governance; a first SOC 2 passed in 58 days.</td></tr><tr><td><b>4 · Connected agents</b></td><td>An orchestrator routes each question to the right agent and database, across four databases and four on-premises servers.</td></tr><tr><td><b>5 · Silos fall</b></td><td>At a technology services firm, the real challenge was context lost at every handoff; connected agents now carry it from contract signing to invoice.</td></tr><tr><td><b>6 to 9 · Compounding, productivity, products, the Leap-Frog Moment</b></td><td>The steps our clients are climbing toward now. They are where the gap between companies on the curve and those off it becomes visible.</td></tr></tbody></table></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Our job is to take a client up the curve in the right order: workflow and data first, governance before connection, people carried through the change, so that productivity and new products follow.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+<!-- ============ FORCES ============ -->
+<section class="qsec layered" id="forces" data-depth="1">
+  <div class="wrap">
+    <div class="qhead"><div><div class="ask">The market you are selling into</div><h2>What forces are changing what my business is worth?</h2></div><div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+    <div class="lvl l1">
+      <p class="short">Five forces, described in our briefing <em>The Owner’s Last Mile</em>, decide how your last mile ends. They are not separate, and what connects them is technology: Forces 3, 4, and 5 are about it directly, and it is what turns Forces 1 and 2 from threats into advantages.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>The forces press on every owner the same way. The difference is what the business looks like when they arrive.</p></div></aside>
+    </div>
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>The Five Forces, and what each one asks of you</div>
+      <div class="three"><div class="panel"><div class="tag">Force 1</div><h3>The Silver Tsunami</h3><p style="margin:0 0 8px">A wave of owners is selling at once, so buyers can be selective.</p><p style="margin:0;color:var(--muted)">The clearest way to stand apart from the crowd is to be further up the Intelligence Curve than the businesses arriving beside you.</p></div><div class="panel"><div class="tag">Force 2</div><h3>The 30% Reality</h3><p style="margin:0 0 8px">Only 20 to 30 percent of businesses put up for sale actually sell.</p><p style="margin:0;color:var(--muted)">The ones that sell built something distinctive years before they went to market, and increasingly that distinctiveness is governed, connected AI.</p></div><div class="panel"><div class="tag">Force 3</div><h3>Valuation Erodes Without AI</h3><p style="margin:0 0 8px">No AI plan, no loan. No governed AI, no buyer.</p><p style="margin:0;color:var(--muted)">Lenders and buyers now judge how far up the Intelligence Curve a business has climbed, including whether cybersecurity and GRC are done correctly.</p></div><div class="panel"><div class="tag">Force 4</div><h3>Orchestrated, Not Scattered</h3><p style="margin:0 0 8px">Between 80 and 95 percent of corporate AI efforts deliver no measurable result.</p><p style="margin:0;color:var(--muted)">The failure is almost never the technology. It is skipping the order: objectives, workflow, data, governance, and then agents.</p></div><div class="panel"><div class="tag">Force 5</div><h3>The Leap-Frog Moment</h3><p style="margin:0 0 8px">Companies that build intelligence into how they run pull away from those that do not.</p><p style="margin:0;color:var(--muted)">You pass competitors still working at lower levels of the Intelligence Curve, or they pass you.</p></div></div>
+    </div>
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: three choices, one builds nothing</div>
+      <p class="measure"><strong>Prepare to sell. Prepare to buy. Or wait and see.</strong> The first two are the same work, and both make the business stronger while you do it. At the center of that work is technology done correctly: AI that is connected, governed, and secure. Waiting to sell is reasonable. Waiting to prepare is the expensive decision.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>The Intelligence Curve is the part of the work that compounds, which means it is also the part that cannot be rushed at the end.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+<!-- ============ END GAME ============ -->
+<section class="qsec layered" id="endgame" data-depth="1">
+  <div class="wrap">
+    <div class="qhead"><div><div class="ask">Where all of this leads</div><h2>What’s my End Game, and how long does it take?</h2></div><div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+    <div class="lvl l1">
+      <p class="short">Your End Game is how you move the wealth you built into your own accounts. Releasing it at a price you are satisfied with, at a time you choose, takes about three years of deliberate preparation, and today that preparation runs through technology.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>The scrutiny at the end does not decide what your business is worth. It reveals it.</p></div></aside>
+    </div>
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Five ways to reach your End Game</div>
+      <div class="three"><div class="panel"><div class="tag">Path 1</div><h3>Sell</h3><p style="margin:0">Sell the business to a buyer at a price that reflects durable earnings.</p></div><div class="panel"><div class="tag">Path 2</div><h3>Refinance</h3><p style="margin:0">Borrow against the business and take money out, which now depends on a credible AI plan.</p></div><div class="panel"><div class="tag">Path 3</div><h3>Refinance and acquire</h3><p style="margin:0">Use the value you built to buy other businesses, absorbed onto your operating system.</p></div><div class="panel"><div class="tag">Path 4</div><h3>Hold</h3><p style="margin:0">Keep the business and take bigger dividends, because it runs without you.</p></div><div class="panel"><div class="tag">Path 5</div><h3>Succession</h3><p style="margin:0">Others run the business and buy you out over time.</p></div></div>
+      <p class="measure" style="margin-top:16px">Each path tests different things. Every one of them now asks how far up the Intelligence Curve the business has climbed, and whether it can run without you.</p>
+    </div>
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: feel it before you live it</div>
+      <p class="measure">Our strategy game, <strong>The Last Mile</strong>, puts owners in the chair for twelve quarters: choose an End Game and a number, learn the Five Closes, climb the Intelligence Curve against an AI-enabled rival, and face the Leap-Frog Moment. There are five ways to lose and one way to win, and almost no one wins the first time.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Every decision you make in the last mile either compounds toward your End Game or quietly discounts it.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+<!-- ============ Q1 WHAT ============ -->
+<section class="qsec layered" id="what" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The first question</div><h2>What does Guidewise actually do?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">We find where work breaks down in your business, correct the process, and build AI agents that carry real work inside the tools your people already use. Security, compliance, and cost discipline are designed in from the first day, not added at the end. We can build your agents, build them with your team, or govern the agents you build yourself.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>We never build a tool in isolation. Every agent is designed as one part of a connected business, so the next one starts from what the last one built.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>How it works</div>
+      <div class="two">
+        <div class="panel">
+          <h3>AI consulting</h3>
+          <div class="tag">Turning AI into working capability</div>
+          <p>Discovery and diagnosis, AI strategy and data strategy, AI agents and multi-agent systems connected to your existing business systems, data and cloud engineering, automated reporting, AI testing and acceptance, and education for your teams.</p>
+        </div>
+        <div class="panel">
+          <h3>Cybersecurity and GRC</h3>
+          <div class="tag">Governance, risk, and compliance</div>
+          <p>Audit readiness such as SOC 2, HIPAA compliance programs, AI frameworks such as ISO 42001 and the NIST AI Risk Management Framework, fractional Security Officer services, cloud security controls, and AI governance and data protection.</p>
+        </div>
+      </div>
+      <p class="measure" style="margin-top:24px"><strong>Governance is the thread between the two.</strong> Controlling what a system can do, proving it, and keeping people accountable applies equally to an AI agent and to a SOC 2 audit. That is why we offer both under one roof.</p>
+      <p class="measure"><strong>Enterprise agent governance joins them.</strong> Whoever builds your agents, we design and govern the enterprise agentic system around them: every agent known, owned, permitted only the access it needs, talking to other agents through governed channels, and held accountable for its work. We are proficient in IBM watsonx.governance and can resell and install it, along with the full IBM watsonx Orchestrate platform.</p>
+      <p class="measure"><strong>Who we serve.</strong> Mid-market companies preparing to scale or to sell to private equity buyers, and private equity firms that want to scale their portfolio companies with AI. We partner with IBM, AWS, Microsoft, Salesforce, Secureframe, and Anthropic through the Claude Partner Network.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>An AI program and a compliance program are usually bought from two different firms that never talk. We treat them as one enterprise system, because the access controls, evidence, and accountability that pass an audit are the same ones that make AI safe to scale.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: every capability</div>
+      <div class="caplist">
+        <h4>Understand the business</h4>
+        <ul><li>Discovery and current-state diagnosis</li><li>Use case identification and weighted prioritization</li><li>AI strategy and data strategy roadmaps</li></ul>
+        <h4>Build the capability</h4>
+        <ul><li>AI agent design and build</li><li>Multi-agent orchestration</li><li>Systems and data integration</li><li>Data engineering and data foundations</li><li>Cloud engineering in Microsoft 365, Azure, Power Platform, and AWS</li><li>Software engineering with tests and documentation</li><li>Automated financial and operational reporting</li></ul>
+        <h4>Govern the agentic enterprise</h4>
+        <ul><li>Enterprise agent governance, for agents we build and agents we do not</li><li>Agent discovery and inventory, including unapproved agents</li><li>Governed agent-to-agent communication</li><li>IBM watsonx.governance and watsonx Orchestrate resale and installation</li></ul>
+        <h4>Prove and sustain it</h4>
+        <ul><li>AI testing and formal acceptance</li><li>AI governance in delivery</li><li>Agent cost assessment and cost governance</li><li>AI education and change management</li></ul>
+        <h4>Secure and comply</h4>
+        <ul><li>SOC 2 readiness</li><li>Multi-framework compliance: ISO 42001, NIST AI RMF, HITRUST, HIPAA, ISO 27001</li><li>Cloud security controls</li><li>Fractional Security Officer</li><li>GRC platform implementation</li><li>Penetration test management</li><li>Corporate governance and oversight navigation</li><li>AI governance and data protection advisory</li></ul>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>These capabilities are not a menu to order from. They are the layers of one operating foundation: understanding feeds the build, the build is proven before it is trusted, and security wraps all of it. Skip a layer and the ones above it become fragile.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q2 DIFFERENT ============ -->
+<section class="qsec layered" id="different" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The question every buyer should ask</div><h2>Why is Guidewise different, and why does it matter?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">Most AI firms start with the technology. We start with the business. AI amplifies whatever it is pointed at, so an agent built on a broken process simply produces faster mistakes. Correcting the business first is what makes the AI worth having. And we govern every agent in your business, not only the ones we build.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Our core belief is simple: AI fails because of adoption, governance, and fit, not because of the technology. Those are enterprise questions, so we answer them at the enterprise level.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Eight differences, and why each one matters to you</div>
+      <div class="diff">
+        <div><h3>Business first, technology second</h3><p class="why"><b>Why it matters:</b> you invest in outcomes your leadership already cares about, not in experiments looking for a purpose.</p></div>
+        <div><h3>We correct the process before we automate it</h3><p class="why"><b>Why it matters:</b> agents inherit the quality of the work beneath them. Fix it once and every future agent benefits.</p></div>
+        <div><h3>Code for certainty, AI for judgment</h3><p class="why"><b>Why it matters:</b> your numbers are exact, your answers are fast, and your running costs stay low and predictable.</p></div>
+        <div><h3>Governance and security at the center</h3><p class="why"><b>Why it matters:</b> your customers, auditors, and future buyers will ask you to prove your AI is safe. You will already have the proof.</p></div>
+        <div><h3>Built on what you already own</h3><p class="why"><b>Why it matters:</b> answers arrive in Teams, SharePoint, and your ERP. Nobody learns a new dashboard, and you avoid vendor lock-in.</p></div>
+        <div><h3>We govern every agent, not just ours</h3><p class="why"><b>Why it matters:</b> agents your team builds or a vendor sells are known, owned, secured, and accountable too. Nothing works in your business unseen.</p></div>
+        <div><h3>You choose how we work together</h3><p class="why"><b>Why it matters:</b> we build for you, build with you, or govern what you build, so you pay only for the help you need.</p></div>
+        <div><h3>We teach as we build</h3><p class="why"><b>Why it matters:</b> your people understand and adopt the tools, so the investment keeps paying after we leave.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Each of these differences protects something that outlives a single project: clean process, trusted data, governed access, and skilled people. Those are the assets that compound.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: proof behind each difference</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Difference</th><th>What it looked like in real client work</th></tr></thead>
+        <tbody>
+          <tr><td>Business first</td><td>At a technology services firm, discovery covered 14 stakeholders across nine functions and produced 35 use cases, each tied to a pain a real person described. Leadership chose the top four from a ranked list.</td></tr>
+          <tr><td>Correct the process first</td><td>At a manufacturer, we recommended building a trusted home for project data before building more agents. The client agreed, and that recommendation became its own engagement.</td></tr>
+          <tr><td>Code for certainty</td><td>Automated work-in-progress financial figures reconciled with the client's own hand-built numbers to the penny, because code does every calculation and the AI never does the arithmetic.</td></tr>
+          <tr><td>Governance at the center</td><td>Written data access authorizations were signed by the client's CEO and Director of Information Security before any system was touched. Agents start with read-only access.</td></tr>
+          <tr><td>Built on what you own</td><td>Agents run in Microsoft Teams and SharePoint on IBM watsonx Orchestrate and Microsoft Copilot Studio, choosing the platform and model that fit each job.</td></tr>
+          <tr><td>Govern every agent</td><td>At a technology services firm, we are bringing agents we did not build under governance through IBM watsonx.governance.</td></tr>
+          <tr><td>You choose how we work</td><td>The same firm's documentation agent was co-built with its own staff, while other agents were built by Guidewise.</td></tr>
+          <tr><td>Teach as we build</td><td>A seven-hour AI curriculum delivered with guided training sessions, a client portal, leadership coaching, and client working groups that shape the design.</td></tr>
+        </tbody>
+      </table></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>The pattern across every engagement is the same: a small, governed start earns trust, and that trust turns into a broader program. One client grew from one signed scope to three in under six months.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q3 START / METHOD ============ -->
+<section class="qsec layered" id="start" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The method</div><h2>How does an engagement start?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short" style="margin-bottom:36px">With a Discovery, not a demo. We learn your objectives and your pain first, then correct the process, then design the agents, then prove them with your people. If your team builds the agents, the same method governs them.</p>
+      <ol class="method">
+        <li><div class="node"><span class="num">1</span><span class="line"></span></div><h3>Discover</h3><p>Business objectives, where work breaks down, and what it costs you.</p></li>
+        <li><div class="node"><span class="num">2</span><span class="line"></span></div><h3>Correct</h3><p>Fix the business process system and the data beneath it.</p></li>
+        <li><div class="node"><span class="num">3</span><span class="line"></span></div><h3>Design</h3><p>Governed, cost-aware agents inside the tools you already use.</p></li>
+        <li><div class="node"><span class="num">4</span><span class="line"></span></div><h3>Prove</h3><p>Tested with your people, formally accepted, and handed over.</p></li>
+      </ol>
+      <div class="band">Governance, security, and cost discipline run through every step</div>
+      <div class="loop"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M24 15a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 3v6h-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Each cycle starts from a higher floor than the last</div>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>What happens in each step</div>
+      <div class="two">
+        <div class="panel"><h3>1. Discover</h3><p>We interview the people who do the work, walk through your systems, and compare how work is supposed to happen with how it really happens. You receive a current-state diagnosis and a ranked list of opportunities, each tied to a real pain.</p><p style="margin:0"><em>Often the diagnosis is valuable on its own, before anything is built. It also includes an inventory of the AI tools and agents already at work in your business.</em></p></div>
+        <div class="panel"><h3>2. Correct</h3><p>Where the process or data is the real challenge, we fix that first: a missing time-entry option, inconsistent naming, a system of record nobody trusts. Agents built on corrected processes are accurate from the start.</p></div>
+        <div class="panel"><h3>3. Design</h3><p>We design the architecture before we build. Calculations go to code, judgment goes to AI, and access is approved in writing before we touch a system. Agents deliver answers where people already work.</p></div>
+        <div class="panel"><h3>4. Prove</h3><p>Your own staff test the agents against defined scenarios. Automated checks catch bad outputs. A leader signs formal acceptance, and we hand over source files, documentation, and training.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Discovery looks across functions, not inside one department. The challenges that matter most usually live in the handoffs between teams, which is exactly where single-department tools fail.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: our discovery and acceptance method</div>
+      <div class="two">
+        <div>
+          <h3 style="font-size:21px;margin-bottom:10px">The Changeworks discovery method</h3>
+          <ul class="clean">
+            <li>Document the intended process.</li>
+            <li>Compare it with what actually happens.</li>
+            <li>Map the human experience of the work.</li>
+            <li>Map the data and system interactions.</li>
+            <li>Rank the pain points by frequency and impact.</li>
+            <li>Produce a current-state diagnostic.</li>
+            <li>Score candidate use cases on weighted criteria so leadership can choose with confidence.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size:21px;margin-bottom:10px">How we prove an agent is ready</h3>
+          <ul class="clean">
+            <li>Client staff run defined scenarios, each several times.</li>
+            <li>We deliberately feed corrupted results to our own test harness to prove it notices.</li>
+            <li>Defects are sorted by cause, fixed, and confirmed on retest.</li>
+            <li>Small groups of real end users test before full rollout.</li>
+            <li>A client leader signs formal acceptance criteria.</li>
+            <li>Weekly executive cadence, a shared tracker, minutes, and change control throughout.</li>
+          </ul>
+        </div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>The use case catalog, the risk taxonomies, and the data maps produced in discovery become company assets. They guide the next three years of decisions, not just the first build.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q4 COST / TOKENS ============ -->
+<section class="qsec layered" id="cost" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The question few firms answer well</div><h2>How do you keep AI running costs under control?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">Every time an AI model reads or writes, it uses tokens, and tokens cost money and time. We design every agent so that code does the math and the AI only does the thinking. The result is exact numbers, faster answers, and running costs you can predict.</p>
+      <div class="router" style="margin-top:28px">
+        <div class="side code"><h3>Code</h3><div class="kicker">For certainty</div><p style="margin:0">Calculations, business rules, and data lookups. The same answer every time, in a fraction of a second, for almost nothing per run.</p></div>
+        <div class="mid"><svg viewBox="0 0 120 90" aria-hidden="true"><circle cx="20" cy="45" r="12" fill="none" stroke="#C9A24B" stroke-width="2"/><path d="M32 45 H60 M60 45 L100 18 M60 45 L100 72" stroke="#C9A24B" stroke-width="2" fill="none"/><path d="M94 12 L102 17 L95 24" fill="none" stroke="#1F3A5F" stroke-width="2"/><path d="M95 66 L102 73 L94 78" fill="none" stroke="#F2A33C" stroke-width="2"/></svg><span>Each task is routed to the right engine</span></div>
+        <div class="side model"><h3>AI model</h3><div class="kicker">For judgment</div><p style="margin:0">Reading contracts, judging risk, summarizing, writing, and conversing. Where language and judgment create real value.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>One wasteful agent is a nuisance. Fifty of them across a company is a budget problem. Cost discipline has to be an enterprise design standard from the first agent.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Why it matters, and what it looks like</div>
+      <p class="measure">An AI model is a prediction engine. It can be brilliant with language and still make arithmetic mistakes. Asking it to add up thousands of cost entries is slow, expensive, and risky. So we split the work.</p>
+      <div class="three">
+        <div class="panel"><h3>Financial reporting</h3><p style="margin:0">Code pulls job data from the ERP, calculates every cost and billing figure, builds the Excel workbook, and posts it to SharePoint. The agent understands the request and delivers the result. The figures reconciled with the client's own to the penny.</p></div>
+        <div class="panel"><h3>Contract risk review</h3><p style="margin:0">A deterministic step reads the scanned contract into text. The AI handles only the judgment: which risks exist, which clause creates them, and how to categorize them.</p></div>
+        <div class="panel"><h3>Portfolio alerts</h3><p style="margin:0">Code scores every active project against defined rules. The AI only formats and relays the result. When a COO asked whether the rules were machine learning or generative AI, the answer was neither: they are numbers you can defend.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Reusable code tools become shared company infrastructure. The calculation engine built for one report can serve the next agent without paying for the same work twice.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: how we design for token efficiency</div>
+      <div class="two">
+        <ul class="clean">
+          <li><strong>Route before you reason.</strong> An orchestrator agent sends each request to a specialist sub-agent bound to the right data source, so no model wades through data it does not need.</li>
+          <li><strong>Tools do the heavy lifting.</strong> Custom code tools retrieve purchase orders, invoices, labor hours, and time tickets, then hand the model only what it needs.</li>
+          <li><strong>Batch the big jobs.</strong> Portfolio scans split hundreds of projects into batches for speed and consistency.</li>
+        </ul>
+        <ul class="clean">
+          <li><strong>Right model for the job.</strong> We are platform-agnostic and model-agnostic, so each agent uses the model and platform that fit its work.</li>
+          <li><strong>Scheduled, not constant.</strong> Digests run on a schedule, such as Monday morning, instead of keeping a model busy all week.</li>
+          <li><strong>Measure the cost.</strong> We assess what each agent costs to run across platforms and recommend how to govern that cost as the agent count grows.</li>
+        </ul>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Agent cost governance belongs alongside security and compliance governance. As agents multiply across departments, leadership needs one view of what they cost and one standard for building them.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q5 SECURITY / GRC ============ -->
+<section class="qsec layered" id="secure" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The question every business will soon face</div><h2>How do you handle security and compliance?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">Soon every business will be asked to prove that its AI and its data are safe: by customers, by auditors, and by anyone who wants to buy the company. We design for that from the first day. Security is our first gate, not our last. On the Intelligence Curve it is step 3, governed and secured, and it comes before agents are connected.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Governance is not a checkbox. It is what makes AI safe to scale and what makes a company more valuable. Governance first, intelligence second.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Six gates every agent passes through</div>
+      <ol class="gates">
+        <li><span class="g">Gate 1</span><b>Approve</b><span class="d">Scope and data access approved in writing before any build.</span></li>
+        <li><span class="g">Gate 2</span><b>Read-only</b><span class="d">Behavior verified with read-only access before any write access.</span></li>
+        <li><span class="g">Gate 3</span><b>Sandbox</b><span class="d">Built safely on real data in a sandbox, then promoted through sign-off.</span></li>
+        <li><span class="g">Gate 4</span><b>Tested</b><span class="d">Automated checks catch bad outputs before anyone relies on them.</span></li>
+        <li><span class="g">Gate 5</span><b>Validated</b><span class="d">Your own staff validate the agent before acceptance.</span></li>
+        <li><span class="g">Gate 6</span><b>Human in the loop</b><span class="d">People review the output, and every decision keeps a human owner.</span></li>
+      </ol>
+      <p class="measure" style="margin-top:28px">These gates apply to every agent in your business, including agents your own team builds and agents that arrive inside software you buy. Beyond the agents, we build the compliance program the business itself will need. Today that usually starts with SOC 2. The horizon is broader, and controls built once can be reused for each framework your market demands.</p>
+      <div class="horizon"><span>SOC 2 Type 1 and Type 2</span><span>HIPAA</span><span>ISO 42001 for AI management</span><span>NIST AI Risk Management Framework</span><span>HITRUST</span><span>ISO 27001</span></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>When agents and compliance are designed together, the evidence an auditor asks for is produced by the way you already work. You are not rebuilding controls for every new framework or every new agent.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: practices from real engagements</div>
+      <div class="two">
+        <ul class="clean">
+          <li>Data access authorizations dual-signed by a CEO and a Director of Information Security before any system was touched.</li>
+          <li>Read-only access through a defined, approved list of 31 data endpoints, enforced at the tool layer.</li>
+          <li>A strict boundary around government data, with that database rolled out last behind a dedicated data-exposure review.</li>
+          <li>US data residency and service-account ownership for agents.</li>
+          <li>A review of a vendor's third-party AI terms, with a written recommendation to keep those features off for now.</li>
+        </ul>
+        <ul class="clean">
+          <li>Security controls designed to operate across nine AWS accounts and more than twenty AWS services, each tied to the service that enforces it.</li>
+          <li>Evidence pipelines from cloud, engineering, and work-management systems into a GRC platform.</li>
+          <li>An entire security program built and evidenced in a HIPAA environment without ever touching protected health information.</li>
+          <li>A fractional Security Officer role, including helping a client stand up a Board and a Compliance and Oversight Committee.</li>
+          <li>Disaster recovery exercises and AI acceptable use policies.</li>
+        </ul>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>For companies preparing to sell, governed AI and a clean compliance record show up in diligence as lower risk. That is enterprise value you can point to.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ GOVERN ============ -->
+<section class="qsec layered" id="govern" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The question IT leaders ask</div><h2>Can we build our own agents?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">Yes, and we will govern them. Build with us, build alone, or bring the agents you already have. We design and govern the enterprise agentic system that keeps every agent secure, accountable, and working together. On the Intelligence Curve, this is what makes steps 3 and 4 possible: governed agents, then connected ones.</p>
+      <div class="three" style="margin-top:28px">
+        <div class="panel"><div class="tag">Option one</div><h3>We build it</h3><p style="margin:0">From Discovery to accepted, governed agents, delivered for you.</p></div>
+        <div class="panel"><div class="tag">Option two</div><h3>We build it together</h3><p style="margin:0">Your team builds alongside ours and learns the method as it goes.</p></div>
+        <div class="panel" style="border-color:var(--amber)"><div class="tag">Option three</div><h3>You build it, we govern it</h3><p style="margin:0">Your agents, and the ones inside software you buy, registered, secured, and held accountable.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Most companies already have agents at work that nobody approved, inside productivity tools, vendor software, and personal accounts. An Intelligent Business knows every one of them. Do you know how many agents are working in your business right now?</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>We govern agents the way you govern a workforce</div>
+      <p class="measure">Your business already knows how to manage people. A human-agentic workforce needs the same disciplines, applied to agents.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Discipline</th><th>For an employee, the business</th><th>For an agent, we make sure it</th></tr></thead>
+        <tbody><tr><td>Hiring</td><td>Is approved for a defined role before starting.</td><td>Is approved for a defined job and data access before going live.</td></tr><tr><td>Identity and access</td><td>Gets a badge that opens only the right doors.</td><td>Gets its own credentials and only the access its job requires.</td></tr><tr><td>A manager</td><td>Reports to someone accountable for their work.</td><td>Has a named human owner accountable for its output.</td></tr><tr><td>Teamwork rules</td><td>Follows how information is shared across teams.</td><td>Talks to other agents only through governed, logged channels.</td></tr><tr><td>Performance reviews</td><td>Has work reviewed against expectations.</td><td>Is tested and monitored for accuracy, behavior, and running cost.</td></tr><tr><td>A headcount</td><td>Appears on the payroll, so leaders know who works here.</td><td>Appears in an agent registry, so leaders know every agent at work, including unapproved ones.</td></tr><tr><td>Offboarding</td><td>Returns the badge on the way out.</td><td>Loses all access when it is retired or replaced.</td></tr></tbody>
+      </table></div>
+      <h3 style="font-size:22px;margin:36px 0 12px">The governed enterprise agentic system</h3>
+      <div class="gsys" role="img" aria-label="Layered diagram: human owners oversee agents from every source, which communicate through a governed orchestration layer, on top of a governance layer, above your systems and data">
+        <div class="gl owners"><span class="gk">Human owners</span>Every agent has a named, accountable person</div>
+        <div class="gagents">
+          <div class="ga">Built by Guidewise</div><div class="ga">Built by your team</div><div class="ga">Inside software you buy</div><div class="ga unknown">Unknown agents<small>Discovered and brought under governance</small></div>
+        </div>
+        <div class="gl orch"><span class="gk">Governed orchestration</span>Agents talk to each other only through approved, logged channels</div>
+        <div class="gl govl"><span class="gk">Governance layer</span>Registry · identity and access · monitoring · cost · audit evidence</div>
+        <div class="gl data"><span class="gk">Your systems and data</span>ERP, documents, operations platforms, cloud</div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Agents that cannot see each other duplicate work and contradict each other. Agents that talk without rules create risk. Governed orchestration lets them cooperate safely, which is what turns separate agents into one enterprise system.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: how we govern the agentic enterprise</div>
+      <div class="two">
+        <ul class="clean">
+          <li><strong>Discovery and inventory.</strong> Find the AI tools and agents already touching your data, approved or not, and record each in a registry.</li>
+          <li><strong>Identity and least privilege.</strong> Each agent runs under its own identity with only the access its job requires, approved in writing.</li>
+          <li><strong>Governed communication.</strong> Agent-to-agent requests route through an orchestration layer that logs who asked what, and why.</li>
+          <li><strong>Accountability.</strong> Every agent has a human owner, a defined job, and a record of its decisions.</li>
+        </ul>
+        <ul class="clean">
+          <li><strong>Monitoring.</strong> Accuracy, behavior, and running cost are tracked over time, not checked once at launch.</li>
+          <li><strong>Lifecycle.</strong> Agents are approved, promoted, reviewed, and retired through a defined process.</li>
+          <li><strong>Frameworks.</strong> Practices align with ISO 42001 and the NIST AI Risk Management Framework, alongside SOC 2 and HIPAA where they apply.</li>
+          <li><strong>Platforms.</strong> We are proficient in IBM watsonx.governance and can resell and install it, along with the full IBM watsonx Orchestrate platform.</li>
+        </ul>
+      </div>
+      <div class="panel" style="margin-top:24px;border-left:3px solid var(--amber)"><div class="tag">In practice</div><p style="margin:0">At a technology services firm, we are bringing agents we did not build under governance through IBM watsonx.governance, alongside the agents we designed for them. The same governance discipline helped a healthcare company pass its first SOC 2 audit in 58 days.</p></div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Governance of agents is the natural extension of governance of the business. The registry, the access approvals, and the audit trail become permanent enterprise assets that every future agent, from any builder, plugs into.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q6 PITFALLS ============ -->
+<section class="qsec layered" id="pitfalls" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The honest question</div><h2>What goes wrong when companies skip these steps?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="short">The AI usually works. The business around it does not. Skipped steps show up later as wrong answers, runaway costs, security exposure, unknown agents touching your data, tools nobody uses, and pilots that never become anything more.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Without an enterprise viewpoint, each agent becomes an island. Islands do not compound. They multiply cost and risk.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Seven common pitfalls, side by side</div>
+      <div class="pit-head"><span>The step skipped</span><span>What tends to happen</span><span>What our method does instead</span></div>
+      <div class="pit">
+        <div class="pit-row"><div><h3>No real Discovery</h3></div><div class="without"><span class="lab">Without it</span>AI is aimed at the loudest request, not the most valuable one.</div><div class="with"><span class="lab">With it</span>Every use case traces to a stated pain and is ranked before money is spent.</div></div>
+        <div class="pit-row"><div><h3>Automating a broken process</h3></div><div class="without"><span class="lab">Without it</span>The agent repeats bad data faster and with more confidence.</div><div class="with"><span class="lab">With it</span>Process and data are corrected first, so agents are accurate from day one.</div></div>
+        <div class="pit-row"><div><h3>Letting AI do the math</h3></div><div class="without"><span class="lab">Without it</span>Token use climbs, answers slow down, and figures cannot be trusted.</div><div class="with"><span class="lab">With it</span>Code calculates, AI judges. Exact numbers at low, predictable cost.</div></div>
+        <div class="pit-row"><div><h3>Security added at the end</h3></div><div class="without"><span class="lab">Without it</span>Broad access, no audit trail, and costly retrofits when a customer or auditor asks.</div><div class="with"><span class="lab">With it</span>Approved, read-only, tested access from the first connection.</div></div>
+        <div class="pit-row"><div><h3>Built without the users</h3></div><div class="without"><span class="lab">Without it</span>People distrust the tool and quietly return to their spreadsheets.</div><div class="with"><span class="lab">With it</span>Staff validate the agent, shape the design, and own the output.</div></div>
+        <div class="pit-row"><div><h3>No agent governance</h3></div><div class="without"><span class="lab">Without it</span>Agents multiply unseen. Unknown tools touch your data with no owner and no audit trail.</div><div class="with"><span class="lab">With it</span>Every agent is registered, owned, permissioned, and monitored, whoever built it.</div></div>
+        <div class="pit-row"><div><h3>No enterprise view</h3></div><div class="without"><span class="lab">Without it</span>Disconnected pilots, duplicate costs, and nothing that grows.</div><div class="with"><span class="lab">With it</span>Each agent strengthens a shared foundation the next one builds on.</div></div>
+      </div>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: what we have actually seen</div>
+      <div class="two">
+        <div class="panel"><h3>The report that lied politely</h3><p style="margin:0">At one manufacturer, the system said engineers spent 0.2 to 2% of their time managing projects. The engineers said 15 to 33%. The cause was a drop-down menu that never offered project management as a time-entry option. An agent built on that data would have repeated a falsehood with confidence. Discovery found it, and a procedural fix corrected it.</p></div>
+        <div class="panel"><h3>The data became the story</h3><p style="margin:0">At one services firm, the first automated billing-readiness audit flagged more projects than it cleared. It surfaced unlogged hours and support projects with no budget. The finding was about the data, not the agent, and the client is acting on it. Correcting the process is often where the first value appears.</p></div>
+        <div class="panel"><h3>Saying "not yet"</h3><p style="margin:0">We reviewed a software vendor's new AI features and recommended keeping them switched off until the data and governance were ready. Leadership agreed in writing. Sometimes the most valuable AI advice is restraint.</p></div>
+        <div class="panel"><h3>The compliance scramble</h3><p style="margin:0">Companies that wait until a major customer or buyer asks for SOC 2 or HIPAA evidence end up rebuilding systems under deadline pressure. Companies that design for it early, as one of our healthcare clients did, pass on their first audit.</p></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+        <div><span class="lbl">Enterprise view</span><p>Every pitfall above is cheaper to prevent than to repair, and the repair bill grows with every agent added on top of the gap.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ Q7 WORK / CASES ============ -->
+<section class="qsec" id="work">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The proof</div><h2>What have you done for companies like ours?</h2></div>
+    </div>
+    <p class="measure" style="color:var(--muted)">Three engagements across manufacturing, technology services, and healthcare. Client names are changed to protect confidentiality. Each story opens with the short version. Open the one closest to your business.</p>
+
+    <div class="cases">
+
+      <!-- CASE 1 -->
+      <article class="case layered" data-depth="1" aria-labelledby="c1">
+        <div class="case-top">
+          <div><div class="who">A mid-sized manufacturer of custom automation equipment</div><h3 id="c1">Ridgeline Automation</h3><div class="line">From graph paper to a couple of minutes.</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end"><span class="svc">AI consulting</span>
+            <div class="seg small" role="group" aria-label="Detail for this story"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+        </div>
+        <div class="case-body">
+          <div class="lvl l1">
+            <div class="crr">
+              <div><span class="k">The challenge</span><p>Engineers were managing projects with little structure, and the monthly work-in-progress financial report was built by hand, taking days to weeks.</p></div>
+              <div><span class="k">What we did</span><p>Discovery across the business, a project management agent for engineers, automated financial reporting, and a trusted foundation for project data.</p></div>
+              <div class="res"><span class="k">The result</span><p>An agent formally accepted by the CEO, a WIP report produced in a couple of minutes and reconciled to the penny, and one engagement that grew to three.</p></div>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>Instead of building more agents on scattered spreadsheets, we recommended building the data foundation first. That decision is what lets every future agent start smarter.</p></div></aside>
+          </div>
+
+          <div class="lvl l2">
+            <div class="lvl-tag"><span class="dot">2</span>How the work benefited the client</div>
+            <h4>What Discovery found before anything was built</h4>
+            <p>Engineers logged 0.2 to 2% of their hours as project management but described spending 15 to 33%. The cause was traced to a time-entry menu, and a procedural fix was identified. Estimated labor hours existed on fewer than 20% of projects, so we worked with the client to establish better, more consistent data practices.</p>
+            <h4>The WIP report, before and after</h4>
+            <div class="ba">
+              <div class="ba-row"><span class="lab">Before, 140+ jobs</span><div class="bar before" style="width:100%">About two weeks, by hand, one site using graph paper and a calculator</div></div>
+              <div class="ba-row"><span class="lab">After, any scope</span><div style="display:flex;align-items:center"><div class="bar after"></div><span style="margin-left:12px;font-size:14px">A couple of minutes</span></div></div>
+            </div>
+            <h4>What we built</h4>
+            <div class="tablewrap"><table>
+              <thead><tr><th>Solution</th><th>What it does</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>PM Life Cycle Agent</td><td>Coaches engineer project managers through each stage of a job, answering from live job data inside Microsoft Teams.</td><td><span class="status s-done">Completed and accepted</span></td></tr>
+                <tr><td>WIP Reporting Agent</td><td>Produces a company-wide or single-project WIP report as an Excel workbook, posted automatically to SharePoint.</td><td><span class="status s-build">Phase 1 build</span></td></tr>
+                <tr><td>Data Foundations Program</td><td>A structured system of record for project data, fed by the ERP and designed with the client's project managers.</td><td><span class="status s-design">In design</span></td></tr>
+              </tbody>
+            </table></div>
+            <p style="margin-top:16px">During the field use period, project managers moved from testing the agent to relying on it, and their questions became requests for more. Using the agent across two plants revealed they named projects differently, and the teams agreed on one standard on the spot.</p>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>Both agents draw on the same governed data access, and the new project system of record will serve future agents for intake, meeting capture, and portfolio views. Each build makes the next one cheaper and more accurate.</p></div></aside>
+          </div>
+
+          <div class="lvl l3">
+            <div class="lvl-tag"><span class="dot">3</span>The detail: how it was built and governed</div>
+            <div class="stat-row">
+              <div class="stat"><b>23</b><span>field scenarios run by client staff, each several times</span></div>
+              <div class="stat"><b>15 of 15</b><span>corrupted results caught by the test harness</span></div>
+              <div class="stat"><b>75 jobs</b><span>full portfolio run that passed every quality check</span></div>
+              <div class="stat"><b>31</b><span>approved read-only data endpoints</span></div>
+            </div>
+            <div class="two">
+              <div>
+                <h4>Architecture</h4>
+                <ul class="clean">
+                  <li>Built on IBM watsonx Orchestrate and delivered in Microsoft Teams.</li>
+                  <li>An orchestrator agent routes each question to a sub-agent bound to the correct database.</li>
+                  <li>Accessible REST APIs stood up across four databases and four on-premises servers, including a government database and server, in an ERP whose team said "nothing connects."</li>
+                  <li>Custom code tools for purchase orders, invoices, labor hours, and time tickets, plus a deterministic calculation engine. The agent never does the arithmetic.</li>
+                  <li>SharePoint, Power Automate, and Microsoft Graph configured to render and post reports.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Governance and adoption</h4>
+                <ul class="clean">
+                  <li>Signed data access confirmation, read-only access enforced at the tool layer, and US data residency.</li>
+                  <li>Rollout one database at a time, with government data last and behind a dedicated data-exposure review.</li>
+                  <li>A vendor's AI features reviewed and kept off on our recommendation, agreed in writing.</li>
+                  <li>A seven-hour AI curriculum with guided training, and a project manager working group shaping the design, including 66 PM Life Cycle milestones.</li>
+                  <li>Full source files and documentation handed to the client at acceptance.</li>
+                </ul>
+              </div>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>Our vision for this client is a three-layer roadmap: the accepted agent first, the data foundation second, then further agentic capability on trusted data. Three signed scopes in under six months show the trust that sequencing earns.</p></div></aside>
+          </div>
+          <button class="case-more" type="button" data-more>Go one level deeper</button>
+        </div>
+      </article>
+
+      <!-- CASE 2 -->
+      <article class="case layered" data-depth="1" aria-labelledby="c2">
+        <div class="case-top">
+          <div><div class="who">A technology services provider to the construction industry</div><h3 id="c2">Cornerstone Technology Partners</h3><div class="line">Not a project management challenge. A context continuity challenge.</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end"><span class="svc">AI consulting</span>
+            <div class="seg small" role="group" aria-label="Detail for this story"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+        </div>
+        <div class="case-body">
+          <div class="lvl l1">
+            <div class="crr">
+              <div><span class="k">The challenge</span><p>Leadership believed it had a project management challenge. Projects ran into budget, billing, and documentation surprises that nobody saw coming.</p></div>
+              <div><span class="k">What we did</span><p>Discovery across nine functions revealed that information was lost at every handoff. We then designed four agents across two platforms, against an original scope of one to three on one platform, and are now governing agents we did not build.</p></div>
+              <div class="res"><span class="k">The result</span><p>About 287 active projects scanned for risk every Monday morning, and a billing audit that cleared 106 of 257 projects and flagged 151 for review. Three agents are in UAT with real users.</p></div>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>The four agents were designed as one connected system across the project lifecycle, from contract signing to invoicing, because the challenge lived between departments, not inside one.</p></div></aside>
+          </div>
+
+          <div class="lvl l2">
+            <div class="lvl-tag"><span class="dot">2</span>How the work benefited the client</div>
+            <p>Discovery produced 15 sets of interview notes from 14 stakeholders and a catalog of 35 use cases, each tied to a stated pain and ranked on seven weighted criteria. Leadership chose the top four.</p>
+            <div class="tablewrap"><table>
+              <thead><tr><th>Agent</th><th>What it does, and what it replaced</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>SOW Risk Extraction Agent</td><td>Turns a signed statement of work into a filed risk register in minutes. Replaced manual reviews that each project manager did differently, or not at all.</td><td><span class="status s-uat">In UAT</span></td></tr>
+                <tr><td>Portfolio Risk Intelligence Agent</td><td>Weekly early-warning digest on budget burn, overdue milestones, and stale projects. Replaced a review assembled from 13 separate reports.</td><td><span class="status s-uat">In UAT</span></td></tr>
+                <tr><td>Invoice Readiness Validator</td><td>Flags projects not ready to bill before the billing cycle, and messages each project manager about their own projects.</td><td><span class="status s-uat">In UAT</span></td></tr>
+                <tr><td>Documentation Operations Agent</td><td>Answers questions from company documents with a live source link, and flags stale documents. Co-built with client staff.</td><td><span class="status s-design">In progress</span></td></tr>
+                <tr><td>Enterprise agent governance</td><td>Brings agents Guidewise did not build under governance through IBM watsonx.governance.</td><td><span class="status s-design">In progress</span></td></tr>
+              </tbody>
+            </table></div>
+            <h4>One question, before and after</h4>
+            <div class="ba">
+              <div class="ba-row"><span class="lab">Before</span><div class="blocks" aria-label="13 separate reports"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+              <div class="ba-row"><span class="lab">After</span><div style="display:flex;align-items:center;gap:12px"><div class="blocks"><i class="one"></i></div><span style="font-size:14px">One Monday digest in Teams</span></div></div>
+            </div>
+            <p class="quote">In the live demo, the agent's 11 flags matched the projects a senior project manager had already flagged herself.</p>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>Risk caught at signing and clean documentation mean fewer surprises across the portfolio, and fewer surprises mean faster, cleaner billing. Each agent improves the inputs of the next.</p></div></aside>
+          </div>
+
+          <div class="lvl l3">
+            <div class="lvl-tag"><span class="dot">3</span>The detail: how it was built and governed</div>
+            <div class="stat-row">
+              <div class="stat"><b>12 of 12</b><span>modules returned on first connection, the day access was approved</span></div>
+              <div class="stat"><b>19</b><span>category risk taxonomy built for a firm that had none</span></div>
+              <div class="stat"><b>20+</b><span>contracts used to test the SOW agent</span></div>
+              <div class="stat"><b>26 pages</b><span>design specification, delivered ahead of commitment</span></div>
+            </div>
+            <div class="two">
+              <div>
+                <h4>Architecture and cost design</h4>
+                <ul class="clean">
+                  <li>Two agents on IBM watsonx Orchestrate and two on Microsoft Copilot Studio, one using Claude as its model. Each platform was chosen for what the user needed.</li>
+                  <li>Contract text is extracted by a deterministic step. The model handles only the judgment of which risks exist and how to classify them.</li>
+                  <li>Portfolio and billing agents calculate every number in code and batch the scans. The model only formats and relays.</li>
+                  <li>The documentation agent is a multi-agent system: an orchestrator routes each request to a retrieval agent or a governance agent.</li>
+                  <li>A cross-platform agent cost assessment, approved by the client's COO, is under way.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Governance and adoption</h4>
+                <ul class="clean">
+                  <li>Data access authorizations dual-signed by the CEO and the Director of Information Security before any system was touched.</li>
+                  <li>Read-only integration with the operations platform, built in a sandbox on a real data snapshot and promoted to production through sign-off.</li>
+                  <li>People stay in charge: project managers own their risk registers, accounting owns the billing rules, and the agents change nothing in the source system.</li>
+                  <li>A run-based UAT plan with small groups of real users and accuracy targets.</li>
+                  <li>A seven-hour AI curriculum, a client portal, and leadership coaching on leading through change.</li>
+                </ul>
+              </div>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>The vision ahead is a unified orchestration layer: one place where people ask questions, get reports, and receive alerts across every agent and both platforms. The client has renewed its IBM watsonx Orchestrate subscription for a second term.</p></div></aside>
+          </div>
+          <button class="case-more" type="button" data-more>Go one level deeper</button>
+        </div>
+      </article>
+
+      <!-- CASE 3 -->
+      <article class="case layered" data-depth="1" aria-labelledby="c3">
+        <div class="case-top">
+          <div><div class="who">A clinical intelligence company in healthcare</div><h3 id="c3">Lumen Clinical</h3><div class="line">A first SOC 2 audit, passed in a way the auditor rarely sees.</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end"><span class="svc grc">Cybersecurity and GRC</span>
+            <div class="seg small" role="group" aria-label="Detail for this story"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div></div>
+        </div>
+        <div class="case-body">
+          <div class="lvl l1">
+            <div class="crr">
+              <div><span class="k">The challenge</span><p>A new healthcare data product needed to prove its security to enterprise clients, in a HIPAA environment, with no security program yet in place.</p></div>
+              <div><span class="k">What we did</span><p>Built the security program, led SOC 2 Type 1 readiness across four Trust Services Criteria, and stepped in as the company's named Security Officer.</p></div>
+              <div class="res"><span class="k">The result</span><p>SOC 2 Type 1 passed on the first audit, 58 days from kickoff to the audit date. The penetration test was graded A, with zero critical, high, or medium findings.</p></div>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>The client chose to build security into the product from day one instead of retrofitting it after the first customer asked. That choice made everything after it faster.</p></div></aside>
+          </div>
+
+          <div class="lvl l2">
+            <div class="lvl-tag"><span class="dot">2</span>How the work benefited the client</div>
+            <h4>58 days, kickoff to audit</h4>
+            <div class="timeline" aria-label="Timeline from kickoff to audit">
+              <div class="track"></div>
+              <div class="m" style="left:0">Kickoff</div>
+              <div class="m" style="left:24%">All 69 controls assigned</div>
+              <div class="m end" style="left:100%">Audit date</div>
+            </div>
+            <p>Most first SOC 2 reports cover Security alone. This one covered Security, Availability, Confidentiality, and Privacy. The work included a 140-step evidence tracker, 59 policy documents, a 17-entry risk register, the system description, client contract language, and a business associate agreement template.</p>
+            <p class="quote">The auditor told the company's President that most remediation discussions take a long time. This one would last a couple of minutes, which the audit team had never seen before.</p>
+            <p>A fixed-scope readiness project became a standing Security Officer role, and the Type 2 observation window is now under way.</p>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>A Type 1 report is a photograph of one day. A Type 2 is the video. The controls and evidence built for the first audit carry forward into Type 2 and on to ISO 42001, the NIST AI Risk Management Framework, HITRUST, HIPAA, and ISO 27001.</p></div></aside>
+          </div>
+
+          <div class="lvl l3">
+            <div class="lvl-tag"><span class="dot">3</span>The detail: how it was built and governed</div>
+            <div class="stat-row">
+              <div class="stat"><b>9</b><span>AWS accounts with security controls designed to operate across them</span></div>
+              <div class="stat"><b>20+</b><span>AWS services, each tied to the controls it enforces</span></div>
+              <div class="stat"><b>9 + 9</b><span>workflow templates and recurring reviews for the Type 2 period</span></div>
+              <div class="stat"><b>0</b><span>protected health information touched</span></div>
+            </div>
+            <div class="two">
+              <ul class="clean">
+                <li>All 69 draft controls triaged and assigned to owners within the first two weeks.</li>
+                <li>Controls refined through nine redline versions with the auditor and the client until each was accurate, testable, and true to how the company operates.</li>
+                <li>A GRC platform implemented, with evidence pipelines from cloud, engineering, and work-management systems.</li>
+                <li>An external penetration test managed end to end.</li>
+              </ul>
+              <ul class="clean">
+                <li>Helped the company stand up a Board of Directors and a Compliance and Oversight Committee, working with the parent organization's counsel, compliance, and privacy leaders. A Guidewise co-founder sits on that committee today.</li>
+                <li>Advised on how the system should be named and described, so the audit scope matched the company's real positioning.</li>
+                <li>A disaster recovery tabletop exercise and an AI acceptable use policy are next.</li>
+              </ul>
+            </div>
+            <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg>
+              <div><span class="lbl">Enterprise view</span><p>The same discipline that passes an audit is what makes AI agents safe to scale. The quality of this work opened an AI governance and data protection conversation with an affiliated company in the same healthcare family.</p></div></aside>
+          </div>
+          <button class="case-more" type="button" data-more>Go one level deeper</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Q8 INTELLIGENT BUSINESS ============ -->
+<section class="qsec layered" id="intelligent" data-depth="1">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The bigger idea</div><h2>What is an Intelligent Business?</h2></div>
+      <div class="seg small" role="group" aria-label="Detail for this answer"><button type="button" data-set="1" aria-pressed="true">1</button><button type="button" data-set="2" aria-pressed="false">2</button><button type="button" data-set="3" aria-pressed="false">3</button></div>
+    </div>
+
+    <div class="lvl l1">
+      <p class="defn">An Intelligent Business learns from its own work, <em>and keeps what it learns.</em></p>
+      <p class="short">Every decision, project, and implementation makes it measurably smarter, because its processes, data, technology, and people are governed and connected, so knowledge is captured and reused instead of lost.</p>
+      <div class="contrast">
+        <div><span class="k">What most firms sell</span><h3>An AI-enabled business</h3>
+          <ul><li>Has AI tools.</li><li>Each tool stands alone.</li><li>Value depends on who is using it this week.</li><li>Security is checked when someone asks.</li></ul></div>
+        <div><span class="k">What Guidewise builds</span><h3>An Intelligent Business</h3>
+          <ul><li>Has a system that compounds.</li><li>Each tool strengthens a shared foundation.</li><li>Value stays in the business when people change.</li><li>Safety can be proven on demand.</li></ul></div>
+      </div>
+      <p class="measure" style="margin-top:20px;color:var(--muted)">It is the difference between buying gym equipment and getting fit. Most of the market sells the equipment.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>An Intelligent Business is an enterprise property, not a departmental one. A single brilliant tool in one department does not make a business intelligent; a connected, governed foundation across the business does.</p></div></aside>
+    </div>
+
+    <div class="lvl l2">
+      <div class="lvl-tag"><span class="dot">2</span>Six traits you can test against your own company</div>
+      <ol class="traits6"><li><div class="tn">1</div><h3>It knows its own truth</h3><p>Leaders trust one version of the numbers that matter, without anyone rebuilding them by hand.</p><p class="proof"><i>Proof:</i> A manufacturer's work-in-progress figures, once two weeks of manual effort, now arrive in minutes and reconcile to the penny.</p></li><li><div class="tn">2</div><h3>Its knowledge survives handoffs</h3><p>Context does not vanish when a project changes hands or an experienced employee leaves.</p><p class="proof"><i>Proof:</i> A services firm's real challenge was context lost at every handoff. Its agents now carry that context across the project lifecycle.</p></li><li><div class="tn">3</div><h3>It sees trouble early</h3><p>Risks surface while they can still be fixed, not after they become surprises.</p><p class="proof"><i>Proof:</i> Contract risks are captured the day a statement of work is signed, and every active project is scanned each Monday morning.</p></li><li><div class="tn">4</div><h3>It can prove it is safe</h3><p>Security and compliance evidence is available on demand, not assembled under deadline.</p><p class="proof"><i>Proof:</i> A healthcare company passed SOC 2 Type 1 on its first audit, 58 days from kickoff to audit date.</p></li><li><div class="tn">5</div><h3>Each project makes the next one cheaper and faster</h3><p>Data connections, code tools, and security controls are reused, not rebuilt.</p><p class="proof"><i>Proof:</i> One manufacturer grew from one signed scope to three, each building on the same governed data access.</p></li><li><div class="tn">6</div><h3>Its people lead with AI</h3><p>Staff shape, test, and own the tools instead of working around them.</p><p class="proof"><i>Proof:</i> Project managers moved from testing an agent to asking for more, and agreed on shared standards along the way.</p></li></ol>
+      <h3 style="font-size:22px;margin:40px 0 4px">How you build one</h3>
+      <p class="measure" style="color:var(--muted);margin:0">The Intelligence Curve is the path to it, and AI is the hinge. The six traits are how you know you have an Intelligent Business. The equation is how you build it. It is a multiplication: if any factor is zero, the result is zero.</p>
+      <div class="factors" aria-label="The Intelligent Business equation">
+        <div class="f"><b>A governed business</b><span>Clear objectives, corrected processes, accountable owners</span></div><div class="op">×</div>
+        <div class="f"><b>Secured technology</b><span>Protected, compliant, and connected, so every agent can prove it is safe</span></div><div class="op">×</div>
+        <div class="f"><b>A human-agentic workforce</b><span>People and agents working together, by design</span></div><div class="op">=</div>
+        <div class="f res"><b>An Intelligent Business</b><span>Smarter after every engagement</span></div>
+      </div>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>Governance first, intelligence second. Without the governed foundation, each new capability adds risk and cost. With it, each one adds to what the business already knows.</p></div></aside>
+    </div>
+
+    <div class="lvl l3">
+      <div class="lvl-tag"><span class="dot">3</span>The detail: what carries forward, and how we prove it</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>What an engagement leaves behind</th><th>How the next engagement uses it</th><th>Trait it strengthens</th></tr></thead>
+        <tbody>
+          <tr><td>Use case catalogs, process maps, and data maps</td><td>Leadership already has a ranked list of what to build next and why.</td><td>5</td></tr>
+          <tr><td>Governed data access and APIs</td><td>New agents connect through approved, read-only paths that already exist.</td><td>4, 5</td></tr>
+          <tr><td>Systems of record and data practices</td><td>Agents start accurate because the data beneath them is trusted.</td><td>1, 2</td></tr>
+          <tr><td>Reusable code tools and calculation engines</td><td>Proven logic is reused, not rebuilt, keeping cost and risk low.</td><td>1, 5</td></tr>
+          <tr><td>Risk taxonomies and business rule sets</td><td>Risk categories and rules become standards every agent follows.</td><td>3</td></tr>
+          <tr><td>Security controls and audit evidence</td><td>Each new compliance framework reuses what is already in place.</td><td>4</td></tr>
+          <tr><td>Trained people and working groups</td><td>Adoption is faster because staff already know how to shape and use agents.</td><td>6</td></tr>
+        </tbody>
+      </table></div>
+      <h3 style="font-size:22px;margin:36px 0 8px">How we prove it</h3>
+      <p class="measure">A claim that a business is getting smarter should be measured, not asserted. So we score all six traits at Discovery to set a baseline, and score them again after every engagement. The Intelligent Business Scorecard below is the same instrument we use, and a client should see its score rise with each implementation.</p>
+      <aside class="ev"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="none" stroke="#C9A24B" stroke-width="1.5"/><circle cx="18" cy="18" r="4" fill="#F2A33C"/></svg><div><span class="lbl">Enterprise view</span><p>The scorecard turns "intelligence compounds" from a promise into a trend line leadership can review, and that a buyer or board can examine.</p></div></aside>
+    </div>
+    <button class="more" type="button" data-more>Go one level deeper</button>
+  </div>
+</section>
+
+<!-- ============ SCORECARD ============ -->
+<section class="qsec" id="scorecard">
+  <div class="wrap">
+    <div class="qhead">
+      <div><div class="ask">The self-assessment</div><h2>How intelligent is my business today?</h2></div>
+    </div>
+    <p class="measure">The Intelligent Business Scorecard. For each trait, choose the statement that best describes your company today, not where you hope it will be. It takes about five minutes. Your answers stay in your browser.</p>
+    <div class="sc">
+      <form id="scForm" onsubmit="return false"><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">It knows its own truth</legend><header><span class="tn">1</span><h3>It knows its own truth</h3></header><p class="q">How do leaders get the numbers that matter most?</p><div class="sc-opts"><label><input type="radio" name="t0" value="1"><span class="lv">1</span><span class="txt">Key numbers are rebuilt by hand and debated in meetings.</span></label><label><input type="radio" name="t0" value="2"><span class="lv">2</span><span class="txt">Some reports are automated, but leaders still double-check them in spreadsheets.</span></label><label><input type="radio" name="t0" value="3"><span class="lv">3</span><span class="txt">Core financial numbers come from one system, but operational data is scattered.</span></label><label><input type="radio" name="t0" value="4"><span class="lv">4</span><span class="txt">Leaders trust one version of the key numbers, available on request.</span></label><label><input type="radio" name="t0" value="5"><span class="lv">5</span><span class="txt">Trusted numbers flow automatically to the people and agents that need them.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Hours to produce key reports, and how many competing versions of the same number exist.</p></fieldset><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">Its knowledge survives handoffs</legend><header><span class="tn">2</span><h3>Its knowledge survives handoffs</h3></header><p class="q">What happens to know-how when work changes hands?</p><div class="sc-opts"><label><input type="radio" name="t1" value="1"><span class="lv">1</span><span class="txt">Know-how lives in a few people's heads.</span></label><label><input type="radio" name="t1" value="2"><span class="lv">2</span><span class="txt">Some documentation exists, but it is out of date or hard to find.</span></label><label><input type="radio" name="t1" value="3"><span class="lv">3</span><span class="txt">Key processes are documented, but context is still lost between teams.</span></label><label><input type="radio" name="t1" value="4"><span class="lv">4</span><span class="txt">Project context follows the work across handoffs and systems of record.</span></label><label><input type="radio" name="t1" value="5"><span class="lv">5</span><span class="txt">Knowledge is captured as work happens and can be answered on demand, with sources.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Time for a new person to get up to speed on a project, and the share of documents that are current.</p></fieldset><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">It sees trouble early</legend><header><span class="tn">3</span><h3>It sees trouble early</h3></header><p class="q">When do you usually find out something has gone wrong?</p><div class="sc-opts"><label><input type="radio" name="t2" value="1"><span class="lv">1</span><span class="txt">When a customer complains or the numbers come in.</span></label><label><input type="radio" name="t2" value="2"><span class="lv">2</span><span class="txt">In monthly reviews, often too late to act.</span></label><label><input type="radio" name="t2" value="3"><span class="lv">3</span><span class="txt">Warning reports exist, but someone has to go looking.</span></label><label><input type="radio" name="t2" value="4"><span class="lv">4</span><span class="txt">Risks are flagged automatically on a regular schedule.</span></label><label><input type="radio" name="t2" value="5"><span class="lv">5</span><span class="txt">Risks are caught at the source, such as contract signing or intake, and routed to an owner.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Share of issues caught before they affect a customer or margin, and time from risk to owner.</p></fieldset><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">It can prove it is safe</legend><header><span class="tn">4</span><h3>It can prove it is safe</h3></header><p class="q">If a customer or buyer asked you to prove your data, AI, and agents are secure, how would that go?</p><div class="sc-opts"><label><input type="radio" name="t3" value="1"><span class="lv">1</span><span class="txt">There is no formal security or compliance program.</span></label><label><input type="radio" name="t3" value="2"><span class="lv">2</span><span class="txt">Policies exist on paper, and no one knows how many AI tools and agents are in use.</span></label><label><input type="radio" name="t3" value="3"><span class="lv">3</span><span class="txt">We are working toward an audit or framework, gathering evidence by hand.</span></label><label><input type="radio" name="t3" value="4"><span class="lv">4</span><span class="txt">We are audited, for example SOC 2, with owned controls, routine evidence, and a known list of AI agents.</span></label><label><input type="radio" name="t3" value="5"><span class="lv">5</span><span class="txt">Evidence is produced automatically, and every AI agent is registered, owned, and governed under a framework such as ISO 42001 or the NIST AI RMF.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Time to complete a security questionnaire, findings in the most recent audit, and the number of AI agents in use that nobody approved.</p></fieldset><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">Each project makes the next one cheaper and faster</legend><header><span class="tn">5</span><h3>Each project makes the next one cheaper and faster</h3></header><p class="q">When you start a new project or tool, how much do you build from scratch?</p><div class="sc-opts"><label><input type="radio" name="t4" value="1"><span class="lv">1</span><span class="txt">Everything starts from scratch.</span></label><label><input type="radio" name="t4" value="2"><span class="lv">2</span><span class="txt">Some reuse happens informally, depending on who is involved.</span></label><label><input type="radio" name="t4" value="3"><span class="lv">3</span><span class="txt">Shared systems exist, but every new tool needs custom connections.</span></label><label><input type="radio" name="t4" value="4"><span class="lv">4</span><span class="txt">New projects reuse governed data connections, code, and controls.</span></label><label><input type="radio" name="t4" value="5"><span class="lv">5</span><span class="txt">New agents and projects are mostly assembled from proven components.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Share of each new build that reuses existing components, and time and cost per new agent.</p></fieldset><fieldset class="sc-trait" style="border:1px solid var(--rule);padding:0;margin:0 0 18px"><legend class="sr" style="position:absolute;left:-9999px">Its people lead with AI</legend><header><span class="tn">6</span><h3>Its people lead with AI</h3></header><p class="q">How do your people relate to AI at work?</p><div class="sc-opts"><label><input type="radio" name="t5" value="1"><span class="lv">1</span><span class="txt">AI use is unofficial, unguided, or avoided.</span></label><label><input type="radio" name="t5" value="2"><span class="lv">2</span><span class="txt">A few enthusiasts experiment; most staff are wary.</span></label><label><input type="radio" name="t5" value="3"><span class="lv">3</span><span class="txt">Teams use approved AI tools for individual tasks.</span></label><label><input type="radio" name="t5" value="4"><span class="lv">4</span><span class="txt">Staff help design, test, and improve the agents they use.</span></label><label><input type="radio" name="t5" value="5"><span class="lv">5</span><span class="txt">People routinely propose new uses, and leaders manage human and agent work together.</span></label></div><p class="sc-measure"><i>How we measure it:</i> Active use of approved tools, and the number of use cases proposed by staff.</p></fieldset></form>
+      <aside class="sc-panel" aria-live="polite">
+        <div class="lbl">Your score</div>
+        <div class="sc-total"><b id="scTotal">0</b><span>of 30</span></div>
+        <div class="sc-band" id="scBand">Answer all six to see your result</div>
+        <p class="sc-band-d" id="scBandD"><span id="scCount">0</span> of 6 traits scored.</p>
+        <svg class="radar" id="radar" viewBox="-60 0 480 330" role="img" aria-label="Radar chart of the six trait scores"></svg>
+        <div class="legend"><span><i style="background:#F2A33C"></i>Today</span><span id="legBase" hidden><i style="background:#9FB2C8"></i>Baseline</span></div>
+        <div class="sc-start" id="scStart" hidden><h4>Where we would start</h4><div id="scStartBody"></div></div>
+        <div class="sc-btns"><button type="button" class="primary" id="scSave">Save as my baseline</button><button type="button" id="scReset">Clear answers</button></div>
+        <p class="sc-note">This is a self-assessment. In a Discovery, we validate each score with evidence and record it as your formal baseline.</p>
+      </aside>
+    </div>
+
+    <h3 style="font-size:22px;margin:48px 0 4px">What the score means</h3>
+    <div class="bands">
+      <div><b>Starting point</b><span>6 to 12</span><p>Intelligence lives in people, not in the business. Value walks out the door with them.</p></div>
+      <div><b>Building the foundation</b><span>13 to 19</span><p>Pockets of trusted data and tools exist, but they do not yet connect or reinforce each other.</p></div>
+      <div><b>Connected</b><span>20 to 25</span><p>A governed foundation is in place, and each project begins to make the next one easier.</p></div>
+      <div><b>Compounding</b><span>26 to 30</span><p>The business gets measurably smarter with every engagement. This is an Intelligent Business.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <div class="wrap">
+    <h2>Start where every good engagement starts: with a Discovery.</h2>
+    <p>Bring us your objectives and the work that frustrates your people most, and the agents you already have. We will show you where AI will help, what needs correcting first, and how to govern all of it safely.</p>
+    <div class="steps">
+      <div><b>A conversation</b><span>Owner to owner, about your objectives and your pain.</span></div>
+      <div><b>A Discovery</b><span>A clear, evidence-based diagnosis before anything is built.</span></div>
+      <div><b>A governed first step</b><span>A first agent we build, build with you, or govern for you, proven before it grows.</span></div>
+    </div>
+    <p class="contact"><a href="https://guidewise.ai" target="_blank" rel="noopener" style="color:var(--amber)">Play The Last Mile at guidewise.ai</a> &nbsp;|&nbsp; guidewise.ai &nbsp;|&nbsp; 717-587-3138</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Client names in this playbook are changed to protect confidentiality. Results are measured outcomes, and every status is stated as of October 2026.</p>
+    <p>Guidewise partners with IBM, AWS, Microsoft, Salesforce, Secureframe, and Anthropic through the Claude Partner Network, and resells and installs IBM watsonx.governance and watsonx Orchestrate.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  function setDepth(el,n){
+    el.setAttribute('data-depth',n);
+    el.querySelectorAll(':scope > .wrap > .qhead .seg button, :scope > .case-top .seg button').forEach(function(b){
+      b.setAttribute('aria-pressed',String(b.dataset.set===String(n)));
+    });
+    var more=el.querySelector('[data-more]');
+    if(more){more.textContent = n>=3 ? '' : (n==1 ? 'Go one level deeper' : 'Show the full detail');}
+  }
+  var layered=[].slice.call(document.querySelectorAll('.layered'));
+  // global control
+  var g=document.getElementById('globalSeg');
+  g.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    var n=b.dataset.set;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    layered.forEach(function(el){setDepth(el,n);});
+    try{localStorage.setItem('gw-depth',n);}catch(err){}
+  });
+  // local controls
+  layered.forEach(function(el){
+    var seg=el.querySelector(':scope > .wrap > .qhead .seg, :scope > .case-top .seg');
+    if(seg){seg.addEventListener('click',function(e){var b=e.target.closest('button'); if(b) setDepth(el,b.dataset.set);});}
+    var more=el.querySelector('[data-more]');
+    if(more){more.addEventListener('click',function(){
+      var n=Math.min(3,parseInt(el.getAttribute('data-depth'),10)+1);
+      setDepth(el,n);
+      var target=el.querySelector('.l'+n); if(target){target.scrollIntoView({block:'start'});}
+    });}
+  });
+  // restore
+  try{var saved=localStorage.getItem('gw-depth'); if(saved){g.querySelector('[data-set="'+saved+'"]').click();}}catch(err){}
+  // theme
+  var btn=document.getElementById('themeBtn');
+  try{var t=localStorage.getItem('gw-theme'); document.documentElement.setAttribute('data-theme',t||'light');}catch(err){document.documentElement.setAttribute('data-theme','light');}
+  btn.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var dark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next = dark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('gw-theme',next);}catch(err){}
+  });
+})();
+</script>
+<script>
+(function(){
+  var form=document.getElementById('scForm'); if(!form) return;
+  var names=['Own truth','Handoffs','Early warning','Provably safe','Reuse','People lead'];
+  var starts=[
+    'A trusted data foundation and automated reporting, so leaders work from one version of the numbers.',
+    'Systems of record and a knowledge agent that answers from current documents, with sources.',
+    'Early-warning agents: risk capture at contract signing and a scheduled scan of every active project.',
+    'A security program and audit readiness, such as SOC 2, so you can prove that what you build is safe.',
+    'An enterprise architecture: governed data connections and reusable tools every future agent can share.',
+    'AI education and a working group, so your people shape the first agent and own its success.'];
+  var traitNames=['It knows its own truth','Its knowledge survives handoffs','It sees trouble early','It can prove it is safe','Each project makes the next one cheaper and faster','Its people lead with AI'];
+  var bands=[[6,12,'Starting point','Intelligence lives in people, not in the business.'],[13,19,'Building the foundation','Trusted pockets exist, but they do not yet reinforce each other.'],[20,25,'Connected','A governed foundation is in place, and each project makes the next easier.'],[26,30,'Compounding','Your business gets measurably smarter with every engagement.']];
+  var cx=180,cy=165,R=118,NS='http://www.w3.org/2000/svg',svg=document.getElementById('radar');
+  function pt(i,v){var a=-Math.PI/2+i*Math.PI/3,r=R*v/5;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+  function poly(vals){return vals.map(function(v,i){return pt(i,v).join(',');}).join(' ');}
+  function el(tag,attrs,txt){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(txt)e.textContent=txt;svg.appendChild(e);return e;}
+  function read(){var out=[];for(var i=0;i<6;i++){var c=form.querySelector('input[name="t'+i+'"]:checked');out.push(c?parseInt(c.value,10):0);}return out;}
+  function getBase(){try{var b=localStorage.getItem('gw-ib-baseline');return b?JSON.parse(b):null;}catch(e){return null;}}
+  function draw(vals,base){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    for(var r=1;r<=5;r++)el('polygon',{points:poly([r,r,r,r,r,r]),fill:'none',stroke:'rgba(255,255,255,'+(r==5?.3:.13)+')','stroke-width':1});
+    for(var i=0;i<6;i++){var p=pt(i,5);el('line',{x1:cx,y1:cy,x2:p[0],y2:p[1],stroke:'rgba(255,255,255,.13)'});
+      var l=pt(i,6.15);el('text',{x:l[0],y:l[1]+4,'text-anchor':Math.abs(l[0]-cx)<5?'middle':(l[0]>cx?'start':'end')},(i+1)+'. '+names[i]);}
+    if(base)el('polygon',{points:poly(base),fill:'rgba(159,178,200,.12)',stroke:'#9FB2C8','stroke-width':2,'stroke-dasharray':'5 5'});
+    if(vals.some(function(v){return v>0;})){el('polygon',{points:poly(vals),fill:'rgba(242,163,60,.28)',stroke:'#F2A33C','stroke-width':2.5});
+      vals.forEach(function(v,i){if(v){var p=pt(i,v);el('circle',{cx:p[0],cy:p[1],r:4,fill:'#F2A33C'});}});}
+  }
+  function update(save){
+    var v=read(),n=v.filter(Boolean).length,tot=v.reduce(function(a,b){return a+b;},0),base=getBase();
+    document.getElementById('scTotal').textContent=tot;
+    document.getElementById('legBase').hidden=!base;
+    var bandEl=document.getElementById('scBand'),bd=document.getElementById('scBandD'),st=document.getElementById('scStart');
+    if(n<6){bandEl.textContent='Answer all six to see your result';bd.textContent=n+' of 6 traits scored.';st.hidden=true;}
+    else{
+      var b=bands.filter(function(x){return tot>=x[0]&&tot<=x[1];})[0];
+      bandEl.textContent=b[2]; bd.textContent=b[3]+(base?' Baseline was '+base.reduce(function(a,c){return a+c;},0)+' of 30.':'');
+      var min=Math.min.apply(null,v),low=[];v.forEach(function(x,i){if(x===min&&low.length<2)low.push(i);});
+      var html=low.map(function(i){return '<p><strong>'+traitNames[i]+'.</strong> '+starts[i]+'</p>';}).join('');
+      if(v[3]<=2&&low.indexOf(3)<0)html+='<p class="gov">Because your security score is 2 or lower, we would build that foundation alongside any first agent. Governance first, intelligence second.</p>';
+      document.getElementById('scStartBody').innerHTML=html; st.hidden=false;
+    }
+    draw(v,base);
+    if(save){try{localStorage.setItem('gw-ib-scores',JSON.stringify(v));}catch(e){}}
+  }
+  form.addEventListener('change',function(){update(true);});
+  document.getElementById('scSave').addEventListener('click',function(){
+    var v=read(); if(v.filter(Boolean).length<6){alert('Please score all six traits before saving a baseline.');return;}
+    try{localStorage.setItem('gw-ib-baseline',JSON.stringify(v));}catch(e){}
+    this.textContent='Baseline saved'; update(false);
+  });
+  document.getElementById('scReset').addEventListener('click',function(){
+    form.querySelectorAll('input').forEach(function(i){i.checked=false;});
+    try{localStorage.removeItem('gw-ib-scores');}catch(e){}
+    document.getElementById('scSave').textContent='Save as my baseline'; update(false);
+  });
+  try{var s=JSON.parse(localStorage.getItem('gw-ib-scores')||'null');if(s)s.forEach(function(v,i){if(v){var r=form.querySelector('input[name="t'+i+'"][value="'+v+'"]');if(r)r.checked=true;}});}catch(e){}
+  update(false);
+})();
+</script>
+</body>
+</html>
