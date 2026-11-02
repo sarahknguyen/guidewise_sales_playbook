@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prove Value. Prove Control. | Guidewise Lunch and Learn</title>
+<meta name="description" content="A Guidewise lunch and learn on putting AI agents to work safely, without stalling the business or skipping governance.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1F3A5F; --navy-deep:#16304F; --amber:#F2A33C;
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#14202E; --muted:#56657A; --rule:#D8DEE6;
+  --accent-ink:#8F5300; --on-navy:#F3F6FA; --on-navy-muted:#B9C7D8;
+  --sans:"Public Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",Times,serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C141F; --surface:#131E2C; --ink:#E7ECF2; --muted:#9BA9B9; --rule:#24344A;
+    --navy:#1A3352; --navy-deep:#122540; --accent-ink:#F2B45E;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C141F; --surface:#131E2C; --ink:#E7ECF2; --muted:#9BA9B9; --rule:#24344A;
+  --navy:#1A3352; --navy-deep:#122540; --accent-ink:#F2B45E;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--navy);z-index:10}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--sans);margin:0;line-height:1.15}
+p{margin:0 0 1em}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--amber);color:#14202E;padding:8px 14px;font-family:var(--sans);font-weight:600;z-index:20}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{background:var(--navy);color:var(--on-navy);position:relative;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;padding:28px 0}
+.wordmark{font-family:var(--sans);font-weight:600;font-size:24px;letter-spacing:-.01em;text-decoration:none;color:var(--on-navy)}
+.top a.quiet{font-family:var(--sans);font-size:15px;color:var(--on-navy-muted);text-underline-offset:4px}
+.top a.quiet:hover{color:var(--on-navy)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;padding:40px 0 80px}
+.kicker{font-family:var(--sans);font-weight:600;color:var(--amber);font-size:16px;margin-bottom:18px}
+.hero h1{font-weight:800;font-size:clamp(44px,7vw,84px);letter-spacing:-.025em;line-height:1.02;margin-bottom:28px}
+.hero h1 span{display:block}
+.lede{font-size:21px;color:var(--on-navy-muted);max-width:44ch;margin-bottom:36px}
+.details{display:grid;grid-template-columns:auto 1fr;gap:6px 22px;margin:0 0 40px;font-family:var(--sans);font-size:16px;max-width:520px}
+.details dt{color:var(--on-navy-muted)}
+.details dd{margin:0;color:var(--on-navy)}
+.actions{display:flex;flex-wrap:wrap;gap:14px}
+.btn{font-family:var(--sans);font-weight:600;font-size:16px;padding:14px 22px;text-decoration:none;border-radius:3px;display:inline-block}
+.btn-primary{background:var(--amber);color:#14202E}
+.btn-primary:hover{background:#F7B65E}
+.btn-ghost{color:var(--on-navy);box-shadow:inset 0 0 0 1.5px rgba(243,246,250,.45)}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1.5px var(--on-navy)}
+.cubes{width:100%;max-width:380px;justify-self:end}
+.cubes .edge{fill:none;stroke:#C9D6E6;stroke-width:1.6;stroke-linejoin:round}
+.cubes .face{fill:rgba(255,255,255,.06)}
+.cubes .lit{fill:var(--amber);opacity:0;animation:light .6s ease-out 1.5s forwards}
+.cubes .draw{stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.1s ease-out forwards}
+.cubes .d2{animation-delay:.25s}.cubes .d3{animation-delay:.5s}
+.cubes .bracket{fill:none;stroke-width:6}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes light{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.cubes .draw{stroke-dashoffset:0}.cubes .lit{opacity:1}}
+
+/* Stakes */
+.stakes{background:var(--surface);border-bottom:1px solid var(--rule)}
+.stakes .wrap{display:grid;grid-template-columns:auto 1fr;gap:16px 40px;align-items:center;padding-top:44px;padding-bottom:44px}
+.stakes .fig{font-family:var(--sans);font-weight:800;font-size:clamp(56px,8vw,88px);color:var(--navy);line-height:1;letter-spacing:-.03em}
+:root[data-theme="dark"] .stakes .fig{color:var(--amber)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stakes .fig{color:var(--amber)}}
+.stakes p{margin:0;font-size:21px;max-width:52ch}
+.stakes small{display:block;margin-top:8px;font-size:14px;color:var(--muted);font-family:var(--sans)}
+
+/* Agenda */
+section.block{padding:88px 0}
+.block h2{font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.015em;margin-bottom:14px}
+.block .intro{color:var(--muted);max-width:60ch;margin-bottom:48px}
+.agenda{list-style:none;margin:0;padding:0;counter-reset:part;border-top:2px solid var(--ink)}
+.agenda li{counter-increment:part;display:grid;grid-template-columns:72px 1fr 1.4fr;gap:8px 32px;padding:28px 0;border-bottom:1px solid var(--rule)}
+.agenda li::before{content:counter(part);font-family:var(--sans);font-weight:800;font-size:32px;color:var(--accent-ink);line-height:1}
+.agenda h3{font-size:21px;font-weight:600}
+.agenda p{margin:0;color:var(--muted);max-width:56ch}
+
+/* Playbook */
+.playbook{background:var(--navy-deep);color:var(--on-navy);padding:88px 0 96px}
+.playbook .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px 40px;margin-bottom:32px}
+.playbook h2{color:var(--on-navy)}
+.playbook .intro{color:var(--on-navy-muted);margin-bottom:0}
+.frame{background:var(--surface);border-radius:4px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.frame iframe{display:block;width:100%;height:min(82vh,920px);min-height:520px;border:0;background:#F5F7FA}
+.frame-note{font-family:var(--sans);font-size:14px;color:var(--on-navy-muted);margin-top:14px}
+
+/* Close */
+.close .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+.close blockquote{margin:0;font-family:var(--sans);font-weight:800;font-size:clamp(30px,4vw,44px);line-height:1.1;letter-spacing:-.02em}
+.close blockquote span{display:block}
+.close blockquote span:last-child{color:var(--accent-ink)}
+.contact{border-left:3px solid var(--amber);padding-left:24px}
+.contact p{color:var(--muted)}
+.contact ul{list-style:none;padding:0;margin:20px 0 0;font-family:var(--sans);font-size:17px;line-height:2}
+.contact a{text-underline-offset:4px}
+footer{border-top:1px solid var(--rule);padding:28px 0;font-family:var(--sans);font-size:14px;color:var(--muted)}
+
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr;padding-bottom:56px}
+  .cubes{max-width:200px;justify-self:start;order:-1}
+  .agenda li{grid-template-columns:48px 1fr}
+  .agenda li p{grid-column:2}
+  .close .wrap{grid-template-columns:1fr}
+  .stakes .wrap{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  body{font-size:17px}
+  .top a.quiet{display:none}
+  .frame iframe{height:78vh}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#playbook">Skip to the playbook</a>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <a class="wordmark" href="https://guidewise.ai">guidewise</a>
+      <a class="quiet" href="Guidewise_Sales_Playbook_Interactive.html">Open the playbook in its own tab</a>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <!-- EDIT: replace bracketed placeholders below before publishing -->
+        <p class="kicker">Lunch and learn for [Brokerage name]</p>
+        <h1><span>Prove value.</span><span>Prove control.</span></h1>
+        <p class="lede">How to put AI agents to work safely, without stalling the business or skipping governance.</p>
+        <dl class="details">
+          <dt>When</dt><dd>[Date], [Start time] to [End time]</dd>
+          <dt>Where</dt><dd>[Location]</dd>
+          <dt>Presenter</dt><dd>[Presenter name], Guidewise</dd>
+          <dt>Length</dt><dd>About 30 minutes, plus questions</dd>
+        </dl>
+        <div class="actions">
+          <a class="btn btn-primary" href="#playbook">Explore the playbook</a>
+          <a class="btn btn-ghost" href="#agenda">See what we’ll cover</a>
+        </div>
+      </div>
+
+      <svg class="cubes" viewBox="0 0 240 280" role="img" aria-label="Three stacked cubes rising to the right, the top one lit in amber">
+        <defs>
+          <g id="cube">
+            <path class="face" d="M0 0 L40 -23 L80 0 L40 23 Z M0 0 L40 23 L40 69 L0 46 Z M80 0 L40 23 L40 69 L80 46 Z"/>
+          </g>
+        </defs>
+        <path class="bracket" stroke="#F2A33C" d="M20 70 V20 H70"/>
+        <path class="bracket" stroke="#7F93AD" d="M220 210 V260 H170"/>
+        <g transform="translate(46 200)">
+          <use href="#cube"/>
+          <path class="edge draw" d="M0 0 L40 -23 L80 0 L40 23 Z M0 0 V46 L40 69 L80 46 V0 M40 23 V69"/>
+        </g>
+        <g transform="translate(86 131)">
+          <use href="#cube"/>
+          <path class="edge draw d2" d="M0 0 L40 -23 L80 0 L40 23 Z M0 0 V46 L40 69 L80 46 V0 M40 23 V69"/>
+        </g>
+        <g transform="translate(126 62)">
+          <use href="#cube"/>
+          <path class="lit" d="M0 0 L40 -23 L80 0 L40 23 Z"/>
+          <path class="edge draw d3" d="M0 0 L40 -23 L80 0 L40 23 Z M0 0 V46 L40 69 L80 46 V0 M40 23 V69"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="stakes">
+    <div class="wrap">
+      <div class="fig">95%</div>
+      <p>of generative AI pilots deliver no measurable impact on the bottom line, and it’s rarely the technology’s fault. The reasons are business reasons, which means they’re fixable.
+        <small>Source: MIT NANDA, “The GenAI Divide: State of AI in Business 2025,” July 2025.</small></p>
+    </div>
+  </div>
+
+  <section class="block" id="agenda" aria-labelledby="agenda-title">
+    <div class="wrap">
+      <h2 id="agenda-title">What we’ll cover</h2>
+      <p class="intro">A practical session, not a product demo. You’ll leave with a few questions worth asking the next time AI comes up with a client, or inside your own agency.</p>
+      <ol class="agenda">
+        <li>
+          <h3>Why AI pilots stall</h3>
+          <p>The three places projects break down: adoption, governance, and fit. Plus a quick look at the “shadow AI” already running in most businesses.</p>
+        </li>
+        <li>
+          <h3>Two questions every AI program must answer</h3>
+          <p>“May this vendor touch our data?” is answered by a contract. “Can we prove our AI is controlled?” is answered by governance. Most companies confuse the two.</p>
+        </li>
+        <li>
+          <h3>Doing it right, in order</h3>
+          <p>Discover, correct, design, prove. Then how to run a pilot and a governance program side by side, and what the first 120 days can look like.</p>
+        </li>
+        <li>
+          <h3>What auditors and buyers will ask</h3>
+          <p>The questions showing up in audits and due diligence, results from client work, and a short self-score you can use on any business you know well.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="playbook" id="playbook" aria-labelledby="playbook-title">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2 id="playbook-title">The interactive playbook</h2>
+          <p class="intro">Explore the ideas behind the session at your own pace, and score how intelligent a business is today.</p>
+        </div>
+        <a class="btn btn-primary" href="Guidewise_Sales_Playbook_Interactive.html" target="_blank" rel="noopener">Open full screen</a>
+      </div>
+      <div class="frame">
+        <iframe src="Guidewise_Sales_Playbook_Interactive.html" title="Guidewise interactive playbook: How we build an intelligent business" loading="lazy"></iframe>
+      </div>
+      <p class="frame-note">Scrolling inside the frame moves through the playbook. On a phone, “Open full screen” is easier to read.</p>
+    </div>
+  </section>
+
+  <section class="block close" aria-labelledby="close-title">
+    <div class="wrap">
+      <blockquote id="close-title">
+        <span>Prove value.</span><span>Prove control.</span><span>At the same time.</span>
+      </blockquote>
+      <div class="contact">
+        <p>Every engagement starts with a Discovery: a conversation about objectives, the work that frustrates people, and the agents already in place, before anything is built.</p>
+        <ul>
+          <li><a href="https://guidewise.ai">www.guidewise.ai</a></li>
+          <li><a href="mailto:info@guidewise.ai">info@guidewise.ai</a></li>
+          <li><a href="tel:+17176065192">+1 717.606.5192</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© Guidewise. Client results referenced in this session are shown without names.</div>
+</footer>
+</body>
+</html>
